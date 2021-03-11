@@ -6,6 +6,7 @@ AUTHOR=GrzesikBartłomiej
 FILES=\
 	Makefile    \
 	zad1/main.c \
+	zad1/tmp.c \
 	zad2/main.c \
 
 
@@ -16,12 +17,13 @@ all: archive
 CC=gcc
 LD=$(CXX)
 GDB=gdb
-CFLAGS=-Wall -c
+CFLAGS=-Wall -c -g
 LDFLAGS= 
 OBJ_DIR=./obj
 
 zad1_src=zad1/main.c zad1/tmp.c
 zad1_obj=$(addprefix $(OBJ_DIR)/, $(zad1_src:%.c=%.c.o))
+
 obj/zad1.out: $(zad1_obj)
 	@printf "%10s %s\n" LD $<
 	@$(LD) $(LDFLAGS) $(zad1_obj) -o $@
@@ -33,6 +35,8 @@ obj/%.c.o : %.c
 	@$(CC) $(CFLAGS) $< -o $@
 
 # =============================================================================
+
+zad%: obj/zad%.out
 
 run%: obj/zad%.out
 	@printf "%10s %s\n" RUN $<
