@@ -1,27 +1,32 @@
 
-
 LAB_NO=01
 AUTHOR=GrzesikBartłomiej
 
 FILES=\
-	Makefile    \
-	zad1/main.c \
-	zad1/tmp.c \
-	zad2/main.c \
+	Makefile            \
+	zad1/main.c         \
+	\
+	zad1/block_arr.h    \
+	zad1/block_arr.c    \
+	zad1/vp_list.h      \
+	zad1/vp_list.c      \
+	\
+	zad2/main.c         \
 
 
 all: archive
 
 # =============================================================================
 
+
 CC=gcc
 LD=$(CXX)
 GDB=gdb
-CFLAGS=-Wall -c -g
+CFLAGS=-Wall -c -g -I./zad1
 LDFLAGS= 
 OBJ_DIR=./obj
 
-zad1_src=zad1/main.c zad1/tmp.c
+zad1_src=zad1/main.c zad1/block_arr.c zad1/vp_list.c
 zad1_obj=$(addprefix $(OBJ_DIR)/, $(zad1_src:%.c=%.c.o))
 
 obj/zad1.out: $(zad1_obj)
@@ -37,14 +42,15 @@ obj/%.c.o : %.c
 # =============================================================================
 
 zad%: obj/zad%.out
+	
 
 run%: obj/zad%.out
 	@printf "%10s %s\n" RUN $<
-	./$<
+	LD_LIBRARY_PATH=$(OBJ_DIR) ./$<
 
 gdb%: obj/zad%.out
 	@printf "%10s %s\n" GDB $<
-	$(GDB) $<
+	LD_LIBRARY_PATH=$(OBJ_DIR) $(GDB) ./$<
 
 # =============================================================================
 
