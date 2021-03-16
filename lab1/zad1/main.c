@@ -1,17 +1,13 @@
 
 #include <time.h>
 #include <sys/times.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 #include <stdio.h>
 #include <string.h>
 
 #include "vp_list.h"
-
-
+#include "block_arr.h"
+#include "merge.h"
 
 void
 vp_list_debug_print(struct vp_list *arr)
@@ -27,54 +23,38 @@ vp_list_debug_print(struct vp_list *arr)
 int 
 main(int argc, const char **argv)
 {
-    FILE *file = fopen("chunky.txt", "r");
-
-    int lines = 0;
-
 #if 1
-    int fd = fileno(file);
+    struct block_arr arr;
 
-    struct stat stat;
-    if (fstat(fd, &stat) != 0) {
-        return -1;
-    }
+    block_arr_init(&arr, 10);
 
-    const char *m = (const char *) mmap(NULL, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    FILE *left =  fopen("./a.txt", "r");
+    FILE *right =  fopen("./b.txt", "r");
+    block_arr_read(&arr, left);
+    block_arr_read(&arr, right);
 
-    const char *line = m;
-    for (const char *pch = strchr(m, '\n'); pch != NULL; pch = strchr(pch + 1, '\n')) {
-        
-        size_t line_size = (size_t) (void *) (pch - line);
+    vp_list_debug_print(&arr.blocks[0]);
+    vp_list_debug_print(&arr.blocks[1]);
 
-        //fwrite(line, sizeof(char), line_size, stdout);
-        //fputs("\n", stdout);
+    rewind(left);
+    rewind(right);
 
-        lines++;
+    FILE *tmp = merge_files(left, right);
 
-        line = pch + 1;
-    }
+    block_arr_remove_block(&arr, 0);
 
+    block_arr_read(&arr, tmp);
 
-    munmap((void *) m, stat.st_size);
-#else
+    vp_list_debug_print(&arr.blocks[1]);
     
-    size_t nread, len = 0;
-    char *line = NULL;
+    fclose(tmp);
+    fclose(left);
+    fclose(right);
 
-    while ((nread = getline(&line, &len, file)) != -1) {
-        lines++;
-    }
-    if (line != NULL) {
-        free(line);
-    }
+    block_arr_free(&arr);
+    
 
-#endif
-    printf("%d\n", lines);
-    fclose(file);
-
-
-
-#if 0
+#elif 0
     struct vp_list arr;
 
     vp_list_init(&arr);

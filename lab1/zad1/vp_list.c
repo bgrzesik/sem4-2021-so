@@ -2,82 +2,82 @@
 #include "vp_list.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 void 
-vp_list_init(struct vp_list *arr)
+vp_list_init(struct vp_list *list)
 {
-    arr->array = NULL;
-    arr->capacity = 0;
-    arr->size = 0;
+    list->data = NULL;
+    list->capacity = 0;
+    list->size = 0;
 }
 
 static void 
-_vp_list_expand(struct vp_list *arr)
+_vp_list_expand(struct vp_list *list)
 {
-    if (arr->array == NULL) {
-        arr->capacity = VP_LIST_INITIAL_SIZE;
-        arr->array = calloc(arr->capacity, sizeof(arr->array[0]));
+    if (list->data == NULL) {
+        list->capacity = VP_LIST_INITIAL_SIZE;
+        list->data = calloc(list->capacity, sizeof(list->data[0]));
         return;
     }
 
-    arr->capacity <<= 1;
-    arr->array = realloc(arr->array, arr->capacity * sizeof(arr->array[0]));
+    list->capacity <<= 1;
+    list->data = realloc(list->data, list->capacity * sizeof(list->data[0]));
 }
 
 void 
-vp_list_insert(struct vp_list *arr, size_t idx, void *block)
+vp_list_insert(struct vp_list *list, size_t idx, void *block)
 {
-    if (arr->array == NULL) {
-        _vp_list_expand(arr);
-    }
-    while (arr->capacity < (arr->size + 1)) {
-        _vp_list_expand(arr);
+    if (list->data == NULL) {
+        _vp_list_expand(list);
     }
 
-    for (int i = arr->size; i > idx; i--) {
-        arr->array[i] = arr->array[i - 1];
+    while (list->capacity < (list->size + 1)) {
+        _vp_list_expand(list);
     }
 
-    arr->size++;
-    arr->array[idx] = block;
+    memmove(&list->data[idx + 1], &list->data[idx], sizeof(void *) * (list->size - idx));
+
+    list->size++;
+    list->data[idx] = block;
 }
 
 void 
-vp_list_append(struct vp_list *arr, void *block)
+vp_list_append(struct vp_list *list, void *block)
 {
-    vp_list_insert(arr, arr->size, block);
+    vp_list_insert(list, list->size, block);
 }
 
 void 
-vp_list_remove(struct vp_list *arr, size_t idx)
+vp_list_remove(struct vp_list *list, size_t idx)
 {
-    arr->size--;
+    list->size--;
 
-    for (int i = idx; i < arr->size; i++) {
-        arr->array[i] = arr->array[i + 1];
+    for (int i = idx; i < list->size; i++) {
+        list->data[i] = list->data[i + 1];
     }
 
-    if (arr->size == 0) {
-        vp_list_free(arr);
+    if (list->size == 0) {
+        vp_list_free(list);
 
-    } else if ((arr->size << 2) <= arr->capacity && 
-               arr->capacity > VP_LIST_INITIAL_SIZE) {
+    } else if ((list->size << 2) <= list->capacity && 
+               list->capacity > VP_LIST_INITIAL_SIZE) {
 
-        arr->capacity >>= 1;
-        arr->array = realloc(arr->array, arr->size * sizeof(arr->array[0]));
+        list->capacity >>= 1;
+        list->data = realloc(list->data, list->size * sizeof(list->data[0]));
     }
 }
 
 void 
-vp_list_free(struct vp_list *arr)
+vp_list_free(struct vp_list *list)
 {
-    if (arr->array != NULL) {
-        free(arr->array);
-        arr->array = NULL;
+    if (list->data != NULL) {
+        free(list->data);
+        list->data = NULL;
     }
 
-    arr->capacity = 0;
-    arr->size = 0;
+    list->capacity = 0;
+    list->size = 0;
 }
 
 

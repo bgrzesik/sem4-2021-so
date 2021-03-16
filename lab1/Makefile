@@ -10,6 +10,8 @@ FILES=\
 	zad1/block_arr.c    \
 	zad1/vp_list.h      \
 	zad1/vp_list.c      \
+	zad1/merge.h        \
+	zad1/merge.c        \
 	\
 	zad2/main.c         \
 
@@ -26,7 +28,7 @@ CFLAGS=-Wall -c -g -I./zad1
 LDFLAGS= 
 OBJ_DIR=./obj
 
-zad1_src=zad1/main.c zad1/block_arr.c zad1/vp_list.c
+zad1_src=zad1/main.c zad1/block_arr.c zad1/vp_list.c zad1/merge.c
 zad1_obj=$(addprefix $(OBJ_DIR)/, $(zad1_src:%.c=%.c.o))
 
 obj/zad1.out: $(zad1_obj)
