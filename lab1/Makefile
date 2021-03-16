@@ -35,6 +35,13 @@ obj/zad1.out: $(zad1_obj)
 	@printf "%10s %s\n" LD $<
 	@$(LD) $(LDFLAGS) $(zad1_obj) -o $@
 
+zad2_src=zad2/main.c
+zad2_obj=$(addprefix $(OBJ_DIR)/, $(zad2_src:%.c=%.c.o))
+
+obj/zad2.out: $(zad2_obj)
+	@printf "%10s %s\n" LD $<
+	@$(LD) $(LDFLAGS) $(zad2_obj) -o $@
+
 
 obj/%.c.o : %.c
 	@mkdir -p $(dir $(OBJ_DIR)/$<)
