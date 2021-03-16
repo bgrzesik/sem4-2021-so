@@ -63,4 +63,11 @@ LIB_TRAMPOLINES(MODULE)
 #endif
 
 
+static inline struct vp_list *
+block_arr_get(struct block_arr *arr, size_t idx)
+{
+    return &arr->blocks[idx];
+}
+
+
 #endif

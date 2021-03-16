@@ -10,12 +10,12 @@
 #include "merge.h"
 
 void
-vp_list_debug_print(struct vp_list *arr)
+vp_list_debug_print(struct vp_list *list)
 {
-    printf("arr.size = %ld\n", arr->size); 
-    printf("arr.capacity = %ld\n", arr->capacity); 
-    for (size_t i = 0; i < arr->size; i++) {
-        printf("arr->array[%ld] = %s\n", i, (char *) vp_list_get(arr, i));
+    printf("list.size = %ld\n", list->size); 
+    printf("list.capacity = %ld\n", list->capacity); 
+    for (size_t i = 0; i < list->size; i++) {
+        printf("list->array[%ld] = %s\n", i, (char *) vp_list_get(list, i));
     }
 }
 

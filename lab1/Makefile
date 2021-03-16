@@ -35,7 +35,7 @@ obj/zad1.out: $(zad1_obj)
 	@printf "%10s %s\n" LD $<
 	@$(LD) $(LDFLAGS) $(zad1_obj) -o $@
 
-zad2_src=zad2/main.c
+zad2_src=zad2/main.c zad1/block_arr.c zad1/vp_list.c zad1/merge.c
 zad2_obj=$(addprefix $(OBJ_DIR)/, $(zad2_src:%.c=%.c.o))
 
 obj/zad2.out: $(zad2_obj)
@@ -55,7 +55,7 @@ zad%: obj/zad%.out
 
 run%: obj/zad%.out
 	@printf "%10s %s\n" RUN $<
-	LD_LIBRARY_PATH=$(OBJ_DIR) ./$<
+	LD_LIBRARY_PATH=$(OBJ_DIR) ./$< $(ARGS)
 
 gdb%: obj/zad%.out
 	@printf "%10s %s\n" GDB $<
