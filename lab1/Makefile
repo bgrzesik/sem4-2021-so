@@ -61,6 +61,10 @@ gdb%: obj/zad%.out
 	@printf "%10s %s\n" GDB $<
 	LD_LIBRARY_PATH=$(OBJ_DIR) $(GDB) ./$<
 
+valgrind%: obj/zad%.out
+	@printf "%10s %s\n" VALGRIND $<
+	LD_LIBRARY_PATH=$(OBJ_DIR) valgrind ./$< $(ARGS)
+
 # =============================================================================
 
 .PHONY: clean

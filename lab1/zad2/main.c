@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <limits.h>
 
 #include <block_arr.h>
 #include <merge.h>
@@ -12,6 +10,7 @@ struct context {
     int argc;
     char **argv;
 
+    int arr_init;
     struct block_arr arr;
 };
 
@@ -64,7 +63,11 @@ cmd_create_table(struct context *ctx) {
         return -1;
     }
 
+    if (ctx->arr_init) {
+        block_arr_free(&ctx->arr);
+    }
     block_arr_init(&ctx->arr, size);
+    ctx->arr_init = 1;
 
     return 0;
 }
@@ -79,6 +82,9 @@ cmd_merge_files(struct context *ctx)
         right = strchr(left, ':');
     }
 
+    struct block_arr_input input;
+    block_arr_input_init(&input);
+
     do {
         if (right == NULL) {
             fprintf(stderr, "error: at least one pair has to given\n");
@@ -88,27 +94,10 @@ cmd_merge_files(struct context *ctx)
         right[0] = '\0';
         right++;
 
-        FILE *fleft = fopen(left, "r");
-        FILE *fright = fopen(right, "r");
+        block_arr_input_add(&input, left, right);
 
-        if (fleft != NULL && fright != NULL) {
-            FILE *tmp = merge_files(fleft, fright);
-
-            if (tmp != NULL) {
-                block_arr_read(&ctx->arr, tmp);
-                fclose(tmp);
-            }
-        } else {
-            fprintf(stderr, "error: at least one of the files is missing\n");
-        }
-
-        if (fleft != NULL) {
-            fclose(fleft);
-        }
-        if (fright != NULL) {
-            fclose(fright);
-        }
-
+        right--;
+        right[0] = ':';
 
         left = consume(ctx);
 
@@ -121,6 +110,10 @@ cmd_merge_files(struct context *ctx)
     } while (right != NULL);
 
     retreat(ctx);
+
+    block_arr_add_merged(&ctx->arr, &input);
+
+    block_arr_input_free(&input);
 
     return 0;
 }
@@ -140,6 +133,20 @@ cmd_print_block(struct context *ctx)
 
     return 0;
 }
+
+int
+cmd_block_size(struct context *ctx)
+{
+    size_t idx = consume_num(ctx);
+    if (idx == -1) {
+        return -1;
+    }
+
+    size_t size = block_arr_get_block_size(&ctx->arr, idx);
+    printf("%zu\n", size);
+
+    return 0;
+}   
 
 int
 cmd_remove_block(struct context *ctx)
@@ -170,15 +177,16 @@ cmd_remove_row(struct context *ctx)
     return 0;
 }
 
-struct _cmd_t {
+struct cmd_info {
     const char *name;
     int (*func)(struct context *);
 };
 
-const struct _cmd_t cmds[] = {
+const struct cmd_info cmd_infos[] = {
     { "create_table", &cmd_create_table },
     { "merge_files", &cmd_merge_files },
     { "print_block", &cmd_print_block },
+    { "block_size", &cmd_block_size },
     { "remove_block", &cmd_remove_block },
     { "remove_row", &cmd_remove_row },
 };
@@ -187,38 +195,62 @@ int
 main(int argc, const char **argv) 
 {
     struct context ctx;
+    ctx.arr_init = 0;
     ctx.argc = argc - 1;
     ctx.argv = (char **) argv + 1;
 
+
+    char **last_argv = ctx.argv;
     const char *cmd = consume(&ctx);
 
     while (cmd != NULL) {
-        const size_t ncmds = sizeof(cmds) / sizeof(cmds[0]);
+        const size_t ncmds = sizeof(cmd_infos) / sizeof(cmd_infos[0]);
 
-        int i;
-        for (i = 0; i < ncmds; i++) {
-            if (strcmp(cmd, cmds[i].name) == 0) {
-                printf("cmd: %s\n", cmds[i].name);
+        const struct cmd_info *info = NULL;
 
-                int ret = cmds[i].func(&ctx);
-                
-                if (ret != 0) {
-                    return ret;
-                }
-
+        for (int i = 0; i < ncmds; i++) {
+            if (strcmp(cmd, cmd_infos[i].name) == 0) {
+                info = &cmd_infos[i];
                 break;
             }
         }
 
-        if (i == ncmds) {
+        if (info != NULL) {
+            int ret = (*(info->func))(&ctx);
+
+            fputs("cmd: ", stdout);
+            while (last_argv != ctx.argv) {
+                fputs(*last_argv, stdout);
+                fputs(" ", stdout);
+
+                last_argv++;
+            }
+            fputs("\n", stdout);
+            
+            if (ret != 0) {
+                if (ctx.arr_init) {
+                    block_arr_free(&ctx.arr);
+                }
+
+                return ret;
+            }
+
+        } else {
             fprintf(stderr, "error: unknown command: %s\n", cmd);
+
+            if (ctx.arr_init) {
+                block_arr_free(&ctx.arr);
+            }
+
             return -1;
         }
 
         cmd = consume(&ctx);
     }
 
-    block_arr_free(&ctx.arr);
+    if (ctx.arr_init) {
+        block_arr_free(&ctx.arr);
+    }
 
     return 0;
 }

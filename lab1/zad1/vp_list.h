@@ -26,8 +26,14 @@ vp_list_insert(struct vp_list *list, size_t idx, void *elem);
 LIB_EXPORT void 
 vp_list_append(struct vp_list *list, void *elem);
 
-LIB_EXPORT void 
+LIB_EXPORT void *
 vp_list_remove(struct vp_list *list, size_t idx);
+
+LIB_EXPORT void *
+vp_list_pop(struct vp_list *list);
+
+LIB_EXPORT void
+vp_list_reverse(struct vp_list *list);
 
 LIB_EXPORT void 
 vp_list_free(struct vp_list *list);
@@ -46,8 +52,14 @@ vp_list_free(struct vp_list *list);
     fn(void, vp_list_append,                                                  \
             (struct vp_list *list, void *elem), (list, elem))                 \
                                                                               \
-    fn(void, vp_list_remove,                                                  \
+    fn(void *, vp_list_remove,                                                \
             (struct vp_list *list, size_t idx), (list, idx))                  \
+                                                                              \
+    fn(void *, vp_list_pop,                                                   \
+            (struct vp_list *list), (list))                                   \
+                                                                              \
+    fn(void, vp_list_reverse,                                                 \
+            (struct vp_list *list), (list))                                   \
                                                                               \
     fn(void, vp_list_free,                                                    \
             (struct vp_list *list), (list))           
@@ -74,6 +86,5 @@ vp_list_size(struct vp_list *list)
 {
     return list->size;
 }
-
 
 #endif

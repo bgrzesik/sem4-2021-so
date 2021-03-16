@@ -48,10 +48,12 @@ vp_list_append(struct vp_list *list, void *block)
     vp_list_insert(list, list->size, block);
 }
 
-LIB_EXPORT void 
+LIB_EXPORT void *
 vp_list_remove(struct vp_list *list, size_t idx)
 {
     list->size--;
+
+    void *ret = list->data[idx];
 
     for (int i = idx; i < list->size; i++) {
         list->data[i] = list->data[i + 1];
@@ -65,6 +67,34 @@ vp_list_remove(struct vp_list *list, size_t idx)
 
         list->capacity >>= 1;
         list->data = realloc(list->data, list->size * sizeof(list->data[0]));
+    }
+
+    return ret;
+}
+
+LIB_EXPORT void *
+vp_list_pop(struct vp_list *list)
+{
+    if (list->size == 0) {
+        return NULL;
+    }
+
+    return vp_list_remove(list, list->size -1);
+}
+
+LIB_EXPORT void
+vp_list_reverse(struct vp_list *list)
+{
+    int i = 0;
+    int j = list->size - 1;
+
+    while (i < j) {
+        void *tmp = list->data[i];
+        list->data[i] = list->data[j];
+        list->data[j] = tmp;
+
+        i++;
+        j--;
     }
 }
 
