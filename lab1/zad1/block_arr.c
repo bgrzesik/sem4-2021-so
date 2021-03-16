@@ -156,8 +156,8 @@ block_arr_input_next(struct block_arr_input *input,
     if (*left == NULL && *right == NULL) {
         vp_list_reverse(&input->files);
     } else {
-        free(*left);
-        free(*right);
+        free((void *) *left);
+        free((void *) *right);
     }
 
     if (vp_list_size(&input->files) == 0) {

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/times.h>
+#include <unistd.h>
 
 #include <block_arr.h>
 #include <merge.h>
@@ -143,7 +145,7 @@ cmd_block_size(struct context *ctx)
     }
 
     size_t size = block_arr_get_block_size(&ctx->arr, idx);
-    printf("%zu\n", size);
+    printf("size: %zu\n", size);
 
     return 0;
 }   
@@ -216,7 +218,12 @@ main(int argc, const char **argv)
         }
 
         if (info != NULL) {
+            struct tms tms_before, tms_after;
+            clock_t real_before, real_after;
+
+            real_before = times(&tms_before);
             int ret = (*(info->func))(&ctx);
+            real_after = times(&tms_after);
 
             fputs("cmd: ", stdout);
             while (last_argv != ctx.argv) {
@@ -234,6 +241,16 @@ main(int argc, const char **argv)
 
                 return ret;
             }
+
+            clock_t rtime = real_after - real_before;
+            clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+            clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+            float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+            printf("real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+            printf("user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+            printf("sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
 
         } else {
             fprintf(stderr, "error: unknown command: %s\n", cmd);

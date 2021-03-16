@@ -55,7 +55,6 @@ LIB_EXPORT void
 block_arr_input_add(struct block_arr_input *input, 
                     const char *left, const char *right);
 
-
 LIB_EXPORT int
 block_arr_input_next(struct block_arr_input *input, 
                      const char **left, const char **right);
