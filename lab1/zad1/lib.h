@@ -7,7 +7,7 @@
 #if defined(LIB_STATIC)
 
 /* #define LIB_EXPORT static */
-#define LIB_EXPORT
+#define LIB_EXPORT extern
 #define LIB_TRAMPOLINES
 
 #elif defined(LIB_SHARED)
@@ -20,10 +20,18 @@
 #include <dlfcn.h>
 
 #ifndef LIB_DYLIB
-#define LIB_DYLIB "liblib.so"
+#define LIB_DYLIB "liblib_shared.so"
 #endif
 
 void *_lib_dylib_handle;
+
+static inline void lib_load(void) {
+    _lib_dylib_handle = dlopen(LIB_DYLIB, RTLD_LAZY);
+}
+
+static inline void lib_unload(void) {
+    dlclose(_lib_dylib_handle);
+}
 
 #ifndef LIB_NO_PROTOTYPES
 #define LIB_NO_PROTOTYPES

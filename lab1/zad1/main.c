@@ -14,7 +14,7 @@ vp_list_debug_print(struct vp_list *list)
 {
     printf("list.size = %ld\n", list->size); 
     printf("list.capacity = %ld\n", list->capacity); 
-    for (size_t i = 0; i < list->size; i++) {
+    for (size_t i = 0; i < vp_list_size(list); i++) {
         printf("list->array[%ld] = %s\n", i, (char *) vp_list_get(list, i));
     }
 }
@@ -23,34 +23,29 @@ vp_list_debug_print(struct vp_list *list)
 int 
 main(int argc, const char **argv)
 {
+#ifdef LIB_DYNAMIC
+    lib_load();
+    lib_load_block_arr();
+#endif
+
 #if 1
     struct block_arr arr;
 
     block_arr_init(&arr, 10);
 
-    FILE *left =  fopen("./a.txt", "r");
-    FILE *right =  fopen("./b.txt", "r");
-    block_arr_read(&arr, left);
-    block_arr_read(&arr, right);
+    struct block_arr_input input;
+    block_arr_input_init(&input);
+    block_arr_input_add(&input, "./a.txt", "./b.txt");
 
-    vp_list_debug_print(&arr.blocks[0]);
-    vp_list_debug_print(&arr.blocks[1]);
+    block_arr_add_merged(&arr, &input);
 
-    rewind(left);
-    rewind(right);
+    block_arr_input_free(&input);
 
-    FILE *tmp = merge_files(left, right);
+    printf("block size: %zu\n", block_arr_get_block_size(&arr, 0));
+
+    vp_list_debug_print(block_arr_get(&arr, 0));
 
     block_arr_remove_block(&arr, 0);
-
-    block_arr_read(&arr, tmp);
-
-    vp_list_debug_print(&arr.blocks[1]);
-    
-    fclose(tmp);
-    fclose(left);
-    fclose(right);
-
     block_arr_free(&arr);
     
 

@@ -75,7 +75,7 @@ block_arr_input_free(struct block_arr_input *input);
     fn(size_t, block_arr_read,                                                \
             (struct block_arr *arr, FILE *file), (arr, file))                 \
                                                                               \
-    fn(int, block_arr_add_merged                                              \
+    fn(int, block_arr_add_merged,                                              \
             (struct block_arr *arr, struct block_arr_input *input),           \
             (arr, input))                                                     \
                                                                               \
