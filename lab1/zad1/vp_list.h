@@ -1,6 +1,8 @@
 
 #include <stdlib.h>
 
+#include "lib.h"
+
 #ifndef __VP_LIST__
 #define __VP_LIST__
 
@@ -13,21 +15,49 @@ struct vp_list {
     size_t    size;
 };
 
+#ifndef LIB_DYNAMIC
 
-void 
+LIB_EXPORT void 
 vp_list_init(struct vp_list *list);
 
-void 
+LIB_EXPORT void 
 vp_list_insert(struct vp_list *list, size_t idx, void *elem);
 
-void 
+LIB_EXPORT void 
 vp_list_append(struct vp_list *list, void *elem);
 
-void 
+LIB_EXPORT void 
 vp_list_remove(struct vp_list *list, size_t idx);
 
-void 
+LIB_EXPORT void 
 vp_list_free(struct vp_list *list);
+
+#else
+
+#define MODULE LIB_MODULE(vp_list)
+#define MODULE_EXPORTS(fn)                                                    \
+                                                                              \
+    fn(void, vp_list_init,                                                    \
+            (struct vp_list *list), (list))                                   \
+                                                                              \
+    fn(void, vp_list_insert,                                                  \
+            (struct vp_list *list, size_t idx, void *elem), (list, idx, elem))\
+                                                                              \
+    fn(void, vp_list_append,                                                  \
+            (struct vp_list *list, void *elem), (list, elem))                 \
+                                                                              \
+    fn(void, vp_list_remove,                                                  \
+            (struct vp_list *list, size_t idx), (list, idx))                  \
+                                                                              \
+    fn(void, vp_list_free,                                                    \
+            (struct vp_list *list), (list))           
+
+LIB_TRAMPOLINES(MODULE)
+
+#undef MODULE_EXPORTS
+#undef MODULE
+
+#endif
 
 
 static inline void *

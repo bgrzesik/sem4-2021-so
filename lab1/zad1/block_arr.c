@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void 
+LIB_EXPORT void 
 block_arr_init(struct block_arr *arr, size_t num)
 {
     arr->blocks = calloc(num, sizeof(struct block_arr));
@@ -15,7 +15,7 @@ block_arr_init(struct block_arr *arr, size_t num)
     }
 }
 
-size_t 
+LIB_EXPORT size_t 
 block_arr_read(struct block_arr *arr, FILE *file)
 {
     if (file == NULL || arr->cursor >= arr->num) {
@@ -33,7 +33,7 @@ block_arr_read(struct block_arr *arr, FILE *file)
         line[nread - 1] = '\n';
     }
 
-    arr->cursor++;
+    return arr->cursor++;
 }
 
 static void
@@ -48,7 +48,7 @@ _block_arr_free_block(struct block_arr *arr, size_t block_idx)
     vp_list_free(list);
 }
 
-void 
+LIB_EXPORT void 
 block_arr_remove_block(struct block_arr *arr, size_t block_idx)
 {
     arr->cursor--;
@@ -57,14 +57,14 @@ block_arr_remove_block(struct block_arr *arr, size_t block_idx)
             (arr->cursor - block_idx) * sizeof(struct block_arr));
 }
 
-void 
+LIB_EXPORT void 
 block_arr_remove_row(struct block_arr *arr, size_t block_idx, size_t row_idx)
 {
     struct vp_list *list = &arr->blocks[block_idx];
     vp_list_remove(list, row_idx);
 }
 
-void 
+LIB_EXPORT void 
 block_arr_free(struct block_arr *arr)
 {
 

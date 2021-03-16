@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 const char *
@@ -28,6 +29,8 @@ cmd_create_table(int *argc, const char ***argv) {
     size_t size = strtoull(arg, NULL, 10);
 
     printf("create_table %ld \n", size);
+
+    return 0;
 }
 
 
@@ -37,7 +40,7 @@ struct _cmd_t
     int (*func)(int *, const char ***);
 };
 
-struct _cmd_t cmds[] = {
+const struct _cmd_t cmds[] = {
     { "create_table", &cmd_create_table }
 };
 

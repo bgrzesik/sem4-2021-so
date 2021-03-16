@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void 
+LIB_EXPORT void 
 vp_list_init(struct vp_list *list)
 {
     list->data = NULL;
@@ -25,7 +25,7 @@ _vp_list_expand(struct vp_list *list)
     list->data = realloc(list->data, list->capacity * sizeof(list->data[0]));
 }
 
-void 
+LIB_EXPORT void 
 vp_list_insert(struct vp_list *list, size_t idx, void *block)
 {
     if (list->data == NULL) {
@@ -42,13 +42,13 @@ vp_list_insert(struct vp_list *list, size_t idx, void *block)
     list->data[idx] = block;
 }
 
-void 
+LIB_EXPORT void 
 vp_list_append(struct vp_list *list, void *block)
 {
     vp_list_insert(list, list->size, block);
 }
 
-void 
+LIB_EXPORT void 
 vp_list_remove(struct vp_list *list, size_t idx)
 {
     list->size--;
@@ -68,7 +68,7 @@ vp_list_remove(struct vp_list *list, size_t idx)
     }
 }
 
-void 
+LIB_EXPORT void 
 vp_list_free(struct vp_list *list)
 {
     if (list->data != NULL) {

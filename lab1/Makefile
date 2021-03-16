@@ -24,7 +24,7 @@ all: archive
 CC=gcc
 LD=$(CXX)
 GDB=gdb
-CFLAGS=-Wall -c -g -I./zad1
+CFLAGS=-Wall -c -g -I./zad1 -D LIB_STATIC
 LDFLAGS= 
 OBJ_DIR=./obj
 
