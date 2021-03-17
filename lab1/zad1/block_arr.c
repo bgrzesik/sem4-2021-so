@@ -8,7 +8,7 @@
 LIB_EXPORT void 
 block_arr_init(struct block_arr *arr, size_t num)
 {
-    arr->blocks = calloc(num, sizeof(struct block_arr));
+    arr->blocks = calloc(num, sizeof(struct vp_list));
     arr->num = num;
     arr->cursor = 0;
 
@@ -102,8 +102,11 @@ block_arr_remove_block(struct block_arr *arr, size_t block_idx)
 {
     arr->cursor--;
     _block_arr_free_block(arr, block_idx);
-    memmove(&arr->blocks[block_idx + 1], &arr->blocks[block_idx], 
-            (arr->cursor - block_idx) * sizeof(struct block_arr));
+
+    memmove(&arr->blocks[block_idx], &arr->blocks[block_idx + 1], 
+            (arr->cursor - block_idx) * sizeof(struct vp_list));
+
+    memset(&arr->blocks[arr->cursor], 0, sizeof(struct vp_list));
 }
 
 LIB_EXPORT void 
@@ -125,7 +128,7 @@ LIB_EXPORT void
 block_arr_free(struct block_arr *arr)
 {
 
-    for (size_t i = 0; i < arr->num; i++) {
+    for (size_t i = 0; i < arr->cursor; i++) {
         _block_arr_free_block(arr, i);
     }
 

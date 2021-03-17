@@ -35,7 +35,7 @@ main(int argc, const char **argv)
 
     struct block_arr_input input;
     block_arr_input_init(&input);
-    block_arr_input_add(&input, "./a.txt", "./b.txt");
+    block_arr_input_add(&input, "./a100x100k.txt", "./b100x100k.txt");
 
     block_arr_add_merged(&arr, &input);
 

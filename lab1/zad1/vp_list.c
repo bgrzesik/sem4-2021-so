@@ -36,7 +36,8 @@ vp_list_insert(struct vp_list *list, size_t idx, void *block)
         _vp_list_expand(list);
     }
 
-    memmove(&list->data[idx + 1], &list->data[idx], sizeof(void *) * (list->size - idx));
+    memmove(&list->data[idx + 1], &list->data[idx], 
+            sizeof(void *) * (list->size - idx));
 
     list->size++;
     list->data[idx] = block;

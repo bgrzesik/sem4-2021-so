@@ -196,6 +196,12 @@ const struct cmd_info cmd_infos[] = {
 int 
 main(int argc, const char **argv) 
 {
+
+#ifdef LIB_DYNAMIC
+    lib_load();
+    lib_load_block_arr();
+#endif
+
     struct context ctx;
     ctx.arr_init = 0;
     ctx.argc = argc - 1;

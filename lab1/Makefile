@@ -15,6 +15,9 @@ FILES=\
 	zad1/merge.c        \
 	                    \
 	zad2/main.c         \
+			    \
+	results3a.txt       \
+	results3b.txt       \
 
 
 all: executables
@@ -40,15 +43,15 @@ $(foreach o, $(opts),
     zad$(1)_shared_o$(o)  := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.static.o$(o)))
     zad$(1)_dynamic_o$(o) := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.dynamic.o$(o)))
 
-    obj/zad$(1).static.o$(o): $$(zad$(1)_static_o$(o)) | obj/liblib_static$(o).a
+    obj/zad$(1).static.o$(o): $$(zad$(1)_static_o$(o)) obj/liblib_static$(o).a
 	    @printf "%10s %s\n" LD $$@
 	    @$$(LD) -o $$@ $$(zad$(1)_static_o$(o)) $$(LDFLAGS) -llib_static$(o)
 
-    obj/zad$(1).shared.o$(o): $$(zad$(1)_shared_o$(o)) | obj/liblib_shared$(o).so
+    obj/zad$(1).shared.o$(o): $$(zad$(1)_shared_o$(o)) obj/liblib_shared$(o).so
 	    @printf "%10s %s\n" LD $$@
 	    @$$(LD) -o $$@ $$(zad$(1)_shared_o$(o)) $$(LDFLAGS) -llib_shared$(o)
 
-    obj/zad$(1).dynamic.o$(o): $$(zad$(1)_dynamic_o$(o)) | obj/liblib_shared$(o).so
+    obj/zad$(1).dynamic.o$(o): $$(zad$(1)_dynamic_o$(o)) obj/liblib_shared$(o).so
 	    @printf "%10s %s\n" LD $$@
 	    @$$(LD) -o $$@ $$(zad$(1)_dynamic_o$(o)) $$(LDFLAGS) -ldl
 
@@ -126,6 +129,38 @@ gdb%: zad%
 valgrind%: zad%
 	@printf "%10s %s\n" VALGRIND $<
 	LD_LIBRARY_PATH=./obj/ valgrind ./obj/zad$(@:valgrind%=%).$(VER).o$(O) $(ARGS)
+
+
+define results
+
+.PHONY: results3a.txt
+results3a.txt: obj/zad2.static.o3 obj/zad2.shared.o3 obj/zad2.dynamic.o3
+	@echo > results3a.txt
+
+	$(foreach ver, static shared dynamic,
+	    echo $(ver) -O$(o) >> results3a.txt
+	    LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o3 `cat ./cmd.txt | xargs` >> results3a.txt
+	    @echo >> results3a.txt
+	    @echo >> results3a.txt
+	    @echo >> results3a.txt
+	)
+
+.PHONY: results3b.txt
+results3b.txt: zad2.static zad2.shared zad2.dynamic 
+	@echo > results3b.txt
+
+	$(foreach o, $(opts),
+	    $(foreach ver, static shared dynamic,
+		echo $(ver) >> results3b.txt
+		LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o$(o) `cat ./cmd.txt | xargs` >> results3b.txt
+		@echo >> results3b.txt
+		@echo >> results3b.txt
+		@echo >> results3b.txt
+	    )
+	)
+endef
+
+$(eval $(call results))
 
 # =============================================================================
 
