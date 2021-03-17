@@ -1,0 +1,189 @@
+cmd: create_table 32 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt 
+real time:   89   0.890s 
+user time:   39   0.390s 
+sys  time:   49   0.490s 
+
+cmd: merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt 
+real time:   90   0.900s 
+user time:   35   0.350s 
+sys  time:   54   0.540s 
+
+cmd: merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt 
+real time:   46   0.460s 
+user time:   16   0.160s 
+sys  time:   30   0.300s 
+
+cmd: merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt 
+real time:   47   0.470s 
+user time:   12   0.120s 
+sys  time:   35   0.350s 
+
+size: 200000
+cmd: block_size 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+size: 200000
+cmd: block_size 3 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    1   0.010s 
+user time:    1   0.010s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    1   0.010s 
+user time:    1   0.010s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt 
+real time:   42   0.420s 
+user time:   10   0.100s 
+sys  time:   32   0.320s 
+
+cmd: merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt 
+real time:   35   0.350s 
+user time:    3   0.030s 
+sys  time:   32   0.320s 
+
+cmd: merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt 
+real time:   34   0.340s 
+user time:    4   0.040s 
+sys  time:   30   0.300s 
+
+cmd: merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt 
+real time:   33   0.330s 
+user time:    6   0.060s 
+sys  time:   28   0.280s 
+
+size: 200000
+cmd: block_size 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+size: 200000
+cmd: block_size 3 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    1   0.010s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_row 0 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    1   0.010s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    1   0.010s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    1   0.010s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    1   0.010s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+
+cmd: remove_block 0 
+real time:    0   0.000s 
+user time:    0   0.000s 
+sys  time:    0   0.000s 
+

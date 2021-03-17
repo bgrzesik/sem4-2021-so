@@ -3,21 +3,31 @@ LAB_NO=01
 AUTHOR=GrzesikBartłomiej
 
 FILES=\
-	Makefile            \
-	zad1/main.c         \
-	                    \
-	zad1/lib.h          \
-	zad1/block_arr.h    \
-	zad1/block_arr.c    \
-	zad1/vp_list.h      \
-	zad1/vp_list.c      \
-	zad1/merge.h        \
-	zad1/merge.c        \
-	                    \
-	zad2/main.c         \
-			    \
-	results3a.txt       \
-	results3b.txt       \
+	README.md	    	\
+	Makefile            	\
+	zad1/main.c         	\
+	                    	\
+	zad1/lib.h          	\
+	zad1/block_arr.h    	\
+	zad1/block_arr.c    	\
+	zad1/vp_list.h      	\
+	zad1/vp_list.c      	\
+	zad1/merge.h        	\
+	zad1/merge.c        	\
+	                    	\
+	zad2/main.c         	\
+			    	\
+	cmd.txt 	    	\
+			    	\
+	a1.txt                  \
+	a2.txt                  \
+	b1.txt                  \
+	b2.txt                  \
+			    	\
+	zad2/results2.txt       \
+	zad3/results3a.txt      \
+	zad3/results3b.txt      \
+
 
 
 all: executables
@@ -130,32 +140,44 @@ valgrind%: zad%
 	@printf "%10s %s\n" VALGRIND $<
 	LD_LIBRARY_PATH=./obj/ valgrind ./obj/zad$(@:valgrind%=%).$(VER).o$(O) $(ARGS)
 
+callgrind%: zad%
+	@printf "%10s %s\n" VALGRIND $<
+	LD_LIBRARY_PATH=./obj/ valgrind 			        \
+			--tool=callgrind                                \
+			--callgrind-out-file=./obj/$<.callgrind 		\
+			./obj/zad$(@:callgrind%=%).$(VER).o$(O) $(ARGS)
+
+	callgrind_annotate ./obj/$<.callgrind
 
 define results
 
-.PHONY: results3a.txt
-results3a.txt: obj/zad2.static.o3 obj/zad2.shared.o3 obj/zad2.dynamic.o3
-	@echo > results3a.txt
+.PHONY: zad2/results2.txt
+zad2/results2.txt: | obj/zad2.static.o3
+	LD_LIBRARY_PATH=./obj/ ./obj/zad2.static.o3 `cat ./cmd.txt | xargs` > zad2/results2.txt
+
+.PHONY: zad3/results3a.txt
+zad3/results3a.txt: | obj/zad2.static.o3 obj/zad2.shared.o3 obj/zad2.dynamic.o3
+	@echo > zad3/results3a.txt
 
 	$(foreach ver, static shared dynamic,
-	    echo $(ver) -O$(o) >> results3a.txt
-	    LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o3 `cat ./cmd.txt | xargs` >> results3a.txt
-	    @echo >> results3a.txt
-	    @echo >> results3a.txt
-	    @echo >> results3a.txt
+	    echo $(ver) >> zad3/results3a.txt
+	    LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o3 `cat ./cmd.txt | xargs` >> zad3/results3a.txt
+	    @echo >> zad3/results3a.txt
+	    @echo >> zad3/results3a.txt
+	    @echo >> zad3/results3a.txt
 	)
 
-.PHONY: results3b.txt
-results3b.txt: zad2.static zad2.shared zad2.dynamic 
-	@echo > results3b.txt
+.PHONY: zad3/results3b.txt
+zad3/results3b.txt: | zad2.static zad2.shared zad2.dynamic 
+	@echo > zad3/results3b.txt
 
 	$(foreach o, $(opts),
 	    $(foreach ver, static shared dynamic,
-		echo $(ver) >> results3b.txt
-		LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o$(o) `cat ./cmd.txt | xargs` >> results3b.txt
-		@echo >> results3b.txt
-		@echo >> results3b.txt
-		@echo >> results3b.txt
+		echo $(ver) -O$(o) >> zad3/results3b.txt
+		LD_LIBRARY_PATH=./obj/ ./obj/zad2.$(ver).o$(o) `cat ./cmd.txt | xargs` >> zad3/results3b.txt
+		@echo >> zad3/results3b.txt
+		@echo >> zad3/results3b.txt
+		@echo >> zad3/results3b.txt
 	    )
 	)
 endef
@@ -178,10 +200,9 @@ ARCHIVE=$(AUTHOR)-cw$(LAB_NO).tar.gz
 ARCHIVE_TOP=$(AUTHOR)/cw$(LAB_NO)
 ARCHIVE_CONTENTS=$(addprefix $(ARCHIVE_TOP)/, $(FILES))
 
-$(ARCHIVE_TOP)/%:
+$(ARCHIVE_TOP)/%: %
 	@printf "%10s %s\n" INSTALL $(@:$(ARCHIVE_TOP)/%=%)
 	@install -C -D $(@:$(ARCHIVE_TOP)/%=%) ./$@
-
 
 $(ARCHIVE): $(ARCHIVE_CONTENTS)
 	@printf "%10s %s\n" TAR $(ARCHIVE)

@@ -113,11 +113,15 @@ cmd_merge_files(struct context *ctx)
 
     retreat(ctx);
 
-    block_arr_add_merged(&ctx->arr, &input);
+    int ret = block_arr_add_merged(&ctx->arr, &input);
 
     block_arr_input_free(&input);
 
-    return 0;
+    if (ret != 0) {
+        fprintf(stderr, "error: merge failed\n");
+    }
+
+    return ret;
 }
 
 int
@@ -125,6 +129,11 @@ cmd_print_block(struct context *ctx)
 {
     size_t idx = consume_num(ctx);
     if (idx == -1) {
+        return -1;
+    }
+
+    if (idx < 0 || idx >= ctx->arr.cursor) {
+        fprintf(stderr, "error: invalid index\n");
         return -1;
     }
     
@@ -144,6 +153,11 @@ cmd_block_size(struct context *ctx)
         return -1;
     }
 
+    if (idx < 0 || idx >= ctx->arr.cursor) {
+        fprintf(stderr, "error: invalid index\n");
+        return -1;
+    }
+    
     size_t size = block_arr_get_block_size(&ctx->arr, idx);
     printf("size: %zu\n", size);
 
@@ -155,6 +169,11 @@ cmd_remove_block(struct context *ctx)
 {
     size_t idx = consume_num(ctx);
     if (idx == -1) {
+        return -1;
+    }
+
+    if (idx < 0 || idx >= ctx->arr.cursor) {
+        fprintf(stderr, "error: invalid index\n");
         return -1;
     }
 
@@ -170,8 +189,18 @@ cmd_remove_row(struct context *ctx)
         return -1;
     }
 
+    if (block_idx < 0 || block_idx >= ctx->arr.cursor) {
+        fprintf(stderr, "error: invalid index\n");
+        return -1;
+    }
+
     size_t row_idx = consume_num(ctx);
     if (row_idx == -1) {
+        return -1;
+    }
+
+    if (row_idx < 0 || row_idx >= block_arr_get_block_size(&ctx->arr, block_idx)) {
+        fprintf(stderr, "error: invalid index\n");
         return -1;
     }
 

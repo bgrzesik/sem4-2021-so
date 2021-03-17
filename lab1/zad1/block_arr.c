@@ -74,12 +74,8 @@ block_arr_add_merged(struct block_arr *arr, struct block_arr_input *input)
             return -1;
         }
 
-        if (fleft != NULL) {
-            fclose(fleft);
-        }
-        if (fright != NULL) {
-            fclose(fright);
-        }
+        fclose(fleft);
+        fclose(fright);
     }
 
     return 0;
@@ -106,7 +102,7 @@ block_arr_remove_block(struct block_arr *arr, size_t block_idx)
     memmove(&arr->blocks[block_idx], &arr->blocks[block_idx + 1], 
             (arr->cursor - block_idx) * sizeof(struct vp_list));
 
-    memset(&arr->blocks[arr->cursor], 0, sizeof(struct vp_list));
+    vp_list_init(&arr->blocks[arr->cursor]);
 }
 
 LIB_EXPORT void 

@@ -28,7 +28,6 @@ main(int argc, const char **argv)
     lib_load_block_arr();
 #endif
 
-#if 1
     struct block_arr arr;
 
     block_arr_init(&arr, 10);
@@ -47,54 +46,6 @@ main(int argc, const char **argv)
 
     block_arr_remove_block(&arr, 0);
     block_arr_free(&arr);
-    
-
-#elif 0
-    struct vp_list arr;
-
-    vp_list_init(&arr);
-    
-    vp_list_append(&arr, "<block 00>");
-    vp_list_append(&arr, "<block 01>");
-    vp_list_append(&arr, "<block 02>");
-    vp_list_append(&arr, "<block 03>");
-    vp_list_append(&arr, "<block 04>");
-    vp_list_append(&arr, "<block 05>");
-    vp_list_append(&arr, "<block 06>");
-    vp_list_append(&arr, "<block 07>");
-    vp_list_append(&arr, "<block 08>");
-    vp_list_append(&arr, "<block 09>");
-    vp_list_append(&arr, "<block 10>");
-    vp_list_append(&arr, "<block 11>");
-    vp_list_append(&arr, "<block 12>");
-    vp_list_append(&arr, "<block 13>");
-    vp_list_append(&arr, "<block 14>");
-    vp_list_append(&arr, "<block 15>");
-    vp_list_append(&arr, "<block 16>");
-    vp_list_append(&arr, "<block 17>");
-    vp_list_append(&arr, "<block 18>");
-    vp_list_append(&arr, "<block 19>");
-    vp_list_append(&arr, "<block 20>");
-    vp_list_debug_print(&arr);
-
-    vp_list_insert(&arr, 10, "<block (10)>");
-    vp_list_insert(&arr, 0, "<block (0)>");
-    vp_list_debug_print(&arr);
-
-    vp_list_remove(&arr, 11);
-    vp_list_remove(&arr, 0);
-
-    vp_list_debug_print(&arr);
-
-    while (arr.size != 0) {
-        vp_list_remove(&arr, 0);
-        vp_list_debug_print(&arr);
-    }
-    
-    vp_list_debug_print(&arr);
-
-    vp_list_free(&arr);
-#endif
 
     return 0;
 }

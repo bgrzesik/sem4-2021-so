@@ -1,0 +1,45 @@
+create_table 32
+
+merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt  a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt
+merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt  a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt
+merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt  a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt
+merge_files a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt  a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt a1.txt:b1.txt
+
+block_size 0
+block_size 3
+
+remove_row 0 0
+remove_row 0 0
+remove_row 0 0
+remove_row 0 0
+
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+
+merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt
+merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt
+merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt
+merge_files a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt a2.txt:b2.txt
+
+block_size 0
+block_size 3
+
+remove_row 0 0
+remove_row 0 0
+remove_row 0 0
+remove_row 0 0
+
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
+remove_block 0
