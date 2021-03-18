@@ -12,7 +12,7 @@ Kod dynamicznego ładowania funkcji jest generowany przy użyciu makr
 znajdujących się w pliku nagłówkowym `zad1/lib.h`. Makro LIB_TRAMPOLINES
 wykorzystuje wcześniej zdefiniowane makro będące listą wywołań innego marka 
 podanego jako argument. Generuje ono odpowiednią strukturę z wskaźnikami 
-na wszystkie funkcje, funcje trampolinowe (ang. trampoline function)
+na wszystkie funkcje, funkcje trampolinowe (ang. trampoline function)
 oraz odpowiednią funckje do ich ładowania. Wszystkie funkcje są oznaczone 
 jako `static inline`, aby uniknąć błędów kompilacji.
 
