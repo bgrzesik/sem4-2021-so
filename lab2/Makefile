@@ -10,6 +10,7 @@ FILES=\
 
 
 all: executables
+.PHONY: all executables
 
 # =============================================================================
 
@@ -56,7 +57,8 @@ callgrind_$(1): $(OBJ)/$(1)
 
 	callgrind_annotate $(OBJ)/$(1).callgrind
 
-execs += $(1)
+executables: $(1)
+.PHONY: $(1) run_$(1) gdb_$(1) valgrind_$(1) callgrind_$(1)
 
 endef
 
@@ -65,7 +67,6 @@ $(eval $(call solution,zad1_lib, zad1/lib_main.c))
 $(eval $(call solution,zad1_sys, zad1/sys_main.c))
 
 
-executables: $(execs)
 
 obj/%.o : %.c
 	@mkdir -p $(dir $@)
@@ -99,4 +100,5 @@ $(ARCHIVE): $(ARCHIVE_CONTENTS)
 	@printf "%10s %s\n" RM $(AUTHOR)
 	@rm -rf $(AUTHOR)
 
+.PHONY: achive
 archive: $(ARCHIVE)
