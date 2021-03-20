@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUF_SIZE 10
+#ifndef BUF_SIZE
+#define BUF_SIZE 512
+#endif
 
 struct cursor {
-    char buf[BUF_SIZE];
     size_t read;
     size_t cursor;
+    char buf[BUF_SIZE];
 };
 
 static int
@@ -50,23 +52,70 @@ _read_line(FILE *file, struct cursor *cur)
     return -1;
 }
 
+static int
+_read_stdin(char *buf, size_t size)
+{
+    size_t cur = 0;
+
+    while (cur < size) {
+        int ret = fread(buf, sizeof(char), 1, stdin);
+
+        if (ret != 1) {
+            return -1;
+        }
+
+        if (*buf == 0 || *buf == '\n') {
+            *buf = 0;
+            return 0;
+        }
+
+        if (*buf != ' ' && *buf != '\n' && *buf != '\r') {
+            buf++;
+        }
+    }
+
+    return -1;
+}
+
 
 int
 main(int argc, const char **argv)
 {
-    FILE *lfile = fopen("a.txt", "r");
-    FILE *rfile = fopen("b.txt", "r");
+    char lname_buf[256], rname_buf[256];
+    const char *lname, *rname;
+
+    struct cursor stdin_cur = { sizeof(stdin_cur.buf), sizeof(stdin_cur.buf) };
+
+    if (argc >= 2) {
+        lname = argv[1];
+    } else {
+        int ret = _read_stdin(lname_buf, sizeof(rname_buf));
+        if (ret != 0) {
+            return ret;
+        }
+        lname = &lname_buf[0];
+    }
+
+    if (argc >= 3) {
+        rname = argv[2];
+    } else {
+        int ret = _read_stdin(rname_buf, sizeof(rname_buf));
+        if (ret != 0) {
+            return ret;
+        }
+        rname = &rname_buf[0];
+    }
+
+    FILE *lfile = fopen(lname, "r");
+    FILE *rfile = fopen(rname, "r");
 
     if (lfile == NULL || rfile == NULL) {
         fprintf(stderr, "error: unable to open file\n");
         return -1;
     }
 
-    struct cursor lcur;
-    lcur.cursor = lcur.read = sizeof(lcur.buf);
-
-    struct cursor rcur;
-    lcur.cursor = rcur.read = sizeof(rcur.buf);
+    struct cursor lcur = { sizeof(lcur.buf), sizeof(lcur.buf) };
+    struct cursor rcur = { sizeof(rcur.buf),  sizeof(rcur.buf) };
     
     int lret = 0;
     int rret = 0;
