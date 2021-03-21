@@ -69,6 +69,7 @@ main(int argc, const char **argv)
 
         fclose(fin);
         fclose(fout);
+        free(table);
         return -1;
     }
 
@@ -126,12 +127,14 @@ main(int argc, const char **argv)
 
                 fclose(fin);
                 fclose(fout);
+                free(table);
                 return -1;
             }
         }
     }
 
-
+    free(buf);
+    free(table);
 
     fclose(fin);
     fclose(fout);

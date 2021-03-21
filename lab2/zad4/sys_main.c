@@ -70,6 +70,7 @@ main(int argc, const char **argv)
         static const char error[] = "error: calloc failed\n";
         write(STDERR_FILENO, error, sizeof(error));
 
+        free(table);
         close(fin);
         close(fout);
         return -1;
@@ -127,6 +128,7 @@ main(int argc, const char **argv)
                 static const char error[] = "error: realloc failed\n";
                 write(STDERR_FILENO, error, sizeof(error));
 
+                free(table);
                 close(fin);
                 close(fout);
                 return -1;
@@ -135,7 +137,8 @@ main(int argc, const char **argv)
     }
 
 
-
+    free(buf);
+    free(table);
     close(fin);
     close(fout);
 
