@@ -79,7 +79,7 @@ main(int argc, const char **argv)
         return -1;
     }
 
-    struct cursor cur = { sizeof(cur.buf), sizeof(cur.buf) };
+    struct cursor cur = { sizeof(cur.buf), sizeof(cur.buf), 0 };
     char buf[256];
     
 
@@ -91,6 +91,7 @@ main(int argc, const char **argv)
         }
     }
     
+    close(file);
 
 
     return 0;

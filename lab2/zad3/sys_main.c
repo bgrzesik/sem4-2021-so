@@ -118,7 +118,7 @@ main(int argc, const char **argv)
         return -1;
     }
 
-    const mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
+    const static mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
 
     int file_a = open("a.txt", O_WRONLY | O_CREAT | O_TRUNC, mode);
     if (file_a == -1) {

@@ -65,13 +65,15 @@ int
 main(int argc, const char **argv)
 {
     if (argc < 3) {
-        fprintf(stderr, "usage: %s <file> <char>\n", argv[0]);
+        static const char no_args[] = "usage: ./a.out <file> <char>\n";
+        fwrite(no_args, sizeof(char), sizeof(no_args), stderr);
         return -1;
     }
 
     FILE *file = fopen(argv[2], "r");
     if (file == NULL) {
-        fprintf(stderr, "error: unable to open %s\n", argv[2]);
+        static const char no_file[] = "error: unable to open file\n";
+        fwrite(no_file, sizeof(char), sizeof(no_file), stderr);
         return -1;
     }
 
@@ -80,12 +82,15 @@ main(int argc, const char **argv)
     
 
     while (_read_line(file, &cur, buf, sizeof(buf)) == 0) {
-        if (strchr(buf, argv[1][0]) != NULL) {
-            fputs(buf, stdout);
+        size_t len = strlen(buf);
+
+        if (memchr(buf, argv[1][0], len) != NULL) {
+            fwrite(buf, 1, len, stdout);
         }
     }
     
-
+    
+    fclose(file);
 
     return 0;
 }

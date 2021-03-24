@@ -22,7 +22,7 @@ LD := $(CC)
 GDB := gdb
 CFLAGS := -Wall -c -g
 OBJ := ./obj
-LDFLAGS := -L $(OBJ)/
+LDFLAGS := -L $(OBJ)/ -lm
 
 
 define solution
@@ -66,6 +66,17 @@ endef
 $(eval $(call solution,zad1_lib, zad1/lib_main.c))
 $(eval $(call solution,zad1_sys, zad1/sys_main.c))
 
+$(eval $(call solution,zad2_lib, zad2/lib_main.c))
+$(eval $(call solution,zad2_sys, zad2/sys_main.c))
+
+$(eval $(call solution,zad3_lib, zad3/lib_main.c))
+$(eval $(call solution,zad3_sys, zad3/sys_main.c))
+
+$(eval $(call solution,zad4_sys, zad4/sys_main.c))
+$(eval $(call solution,zad4_lib, zad4/lib_main.c))
+
+$(eval $(call solution,zad5_sys, zad5/sys_main.c))
+$(eval $(call solution,zad5_lib, zad5/lib_main.c))
 
 
 obj/%.o : %.c

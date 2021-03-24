@@ -110,7 +110,8 @@ main(int argc, const char **argv)
     FILE *rfile = fopen(rname, "r");
 
     if (lfile == NULL || rfile == NULL) {
-        fprintf(stderr, "error: unable to open file\n");
+        static const char no_file[] = "error: unable to open file\n";
+        fwrite(no_file, sizeof(char), sizeof(no_file), stderr);
         return -1;
     }
 
