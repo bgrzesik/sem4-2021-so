@@ -4,8 +4,28 @@ AUTHOR=GrzesikBartłomiej
 
 FILES=\
 	Makefile            	\
+	long.txt            	\
+	dane.txt            	\
+				\
 	zad1/lib_main.c       	\
 	zad1/sys_main.c       	\
+	pomiar_zad_1.txt       	\
+				\
+	zad2/lib_main.c       	\
+	zad2/sys_main.c       	\
+	pomiar_zad_2.txt       	\
+				\
+	zad3/lib_main.c       	\
+	zad3/sys_main.c       	\
+	pomiar_zad_3.txt       	\
+				\
+	zad4/lib_main.c       	\
+	zad4/sys_main.c       	\
+	pomiar_zad_4.txt       	\
+				\
+	zad5/lib_main.c       	\
+	zad5/sys_main.c       	\
+	pomiar_zad_5.txt       	\
 
 
 
@@ -58,6 +78,7 @@ callgrind_$(1): $(OBJ)/$(1)
 	callgrind_annotate $(OBJ)/$(1).callgrind
 
 executables: $(1)
+
 .PHONY: $(1) run_$(1) gdb_$(1) valgrind_$(1) callgrind_$(1)
 
 endef
@@ -77,6 +98,74 @@ $(eval $(call solution,zad4_lib, zad4/lib_main.c))
 
 $(eval $(call solution,zad5_sys, zad5/sys_main.c))
 $(eval $(call solution,zad5_lib, zad5/lib_main.c))
+
+
+measure: executables
+	# ====================================================================
+
+	sync
+	sleep 2
+	echo "Lib" > pomiar_zad_1.txt
+	$(OBJ)/zad1_lib long.txt dane.txt 1>/dev/null 2>> pomiar_zad_1.txt
+
+	sync
+	sleep 2
+	echo "Sys" >> pomiar_zad_1.txt
+	$(OBJ)/zad1_sys long.txt dane.txt 1>/dev/null 2>> pomiar_zad_1.txt
+
+	# ====================================================================
+
+	sync
+	sleep 2
+	echo "Lib" > pomiar_zad_2.txt
+	$(OBJ)/zad2_lib 0 dane.txt 1>/dev/null 2>> pomiar_zad_2.txt
+
+	sync
+	sleep 2
+	echo "Sys" >> pomiar_zad_2.txt
+	$(OBJ)/zad2_sys 0 dane.txt 1>/dev/null 2>> pomiar_zad_2.txt
+
+	# ====================================================================
+
+	sync
+	sleep 2
+	echo "Lib" > pomiar_zad_3.txt
+	$(OBJ)/zad3_lib 1>/dev/null 2>> pomiar_zad_3.txt
+
+
+	sync
+	sleep 2
+	echo "Sys" >> pomiar_zad_3.txt
+	$(OBJ)/zad3_sys 1>/dev/null 2>> pomiar_zad_3.txt
+	rm a.txt b.txt c.txt
+
+	# ====================================================================
+
+	sync
+	sleep 2
+	echo "Lib" > pomiar_zad_4.txt
+	$(OBJ)/zad4_sys long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
+	
+	sync
+	sleep 2
+	echo "Sys" >> pomiar_zad_4.txt
+	$(OBJ)/zad4_lib long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
+	rm tmp.txt
+
+	# ====================================================================
+
+	sync
+	sleep 2
+	echo "Lib" > pomiar_zad_5.txt
+	$(OBJ)/zad5_sys long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
+
+	sync
+	sleep 2
+	echo "Sys" >> pomiar_zad_5.txt
+	$(OBJ)/zad5_lib long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
+	rm tmp.txt
+
+	# ====================================================================
 
 
 obj/%.o : %.c
@@ -104,7 +193,7 @@ $(ARCHIVE_TOP)/%: %
 	@printf "%10s %s\n" INSTALL $(@:$(ARCHIVE_TOP)/%=%)
 	@install -C -D $(@:$(ARCHIVE_TOP)/%=%) ./$@
 
-$(ARCHIVE): $(ARCHIVE_CONTENTS)
+$(ARCHIVE): measure $(ARCHIVE_CONTENTS)
 	@printf "%10s %s\n" TAR $(ARCHIVE)
 	@tar -czf $(ARCHIVE) $(AUTHOR)
 

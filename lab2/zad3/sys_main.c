@@ -1,7 +1,9 @@
 #include <unistd.h>
+#include <sys/times.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 
@@ -74,6 +76,12 @@ _parse_num(char *buf, size_t size, long long *out)
             return 0;
         }
 
+        if (*buf == ' ') {
+            buf++;
+            size--;
+            continue;
+        }
+
         if (*buf < '0' || *buf > '9') {
             break;
         }
@@ -111,9 +119,14 @@ _print_num(int fd, int num)
 int
 main(int argc, const char **argv)
 {
-    int file = open("data.txt", O_RDONLY);
+    struct tms tms_before, tms_after;
+    clock_t real_before, real_after;
+    real_before = times(&tms_before);
+
+
+    int file = open("dane.txt", O_RDONLY);
     if (file == -1) {
-        static const char no_file[] = "error: unable to open file data.txt\n";
+        static const char no_file[] = "error: unable to open file dane.txt\n";
         write(STDERR_FILENO, no_file, sizeof(no_file));
         return -1;
     }
@@ -187,6 +200,18 @@ main(int argc, const char **argv)
     close(file_b);
     close(file_c);
 
+
+    real_after = times(&tms_after);
+
+    clock_t rtime = real_after - real_before;
+    clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+    clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    fprintf(stderr, "real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    fprintf(stderr, "user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    fprintf(stderr, "sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
 
     return 0;
 }

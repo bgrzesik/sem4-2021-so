@@ -1,6 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/times.h>
 
 #ifndef BUF_SIZE
 #define BUF_SIZE 512
@@ -64,6 +66,11 @@ _read_line(FILE *file, struct cursor *cur, char *out, size_t out_len)
 int
 main(int argc, const char **argv)
 {
+    struct tms tms_before, tms_after;
+    clock_t real_before, real_after;
+    real_before = times(&tms_before);
+    
+
     if (argc < 3) {
         static const char no_args[] = "usage: ./a.out <file> <char>\n";
         fwrite(no_args, sizeof(char), sizeof(no_args), stderr);
@@ -91,6 +98,19 @@ main(int argc, const char **argv)
     
     
     fclose(file);
+
+
+    real_after = times(&tms_after);
+
+    clock_t rtime = real_after - real_before;
+    clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+    clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    fprintf(stderr, "real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    fprintf(stderr, "user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    fprintf(stderr, "sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
 
     return 0;
 }

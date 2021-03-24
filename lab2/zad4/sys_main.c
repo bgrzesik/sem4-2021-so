@@ -1,12 +1,19 @@
 #include <unistd.h>
+#include <sys/times.h>
+
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 int
 main(int argc, const char **argv)
 {
+    struct tms tms_before, tms_after;
+    clock_t real_before, real_after;
+    real_before = times(&tms_before);
+
     if (argc < 5) {
         static const char error[] = "usage: ./a.out <in> <out> <n1> <n2>\n";
         write(STDERR_FILENO, error, sizeof(error));
@@ -102,7 +109,7 @@ main(int argc, const char **argv)
                 status++;
             } else {
                 while (status > 0 && pattern[status] != buf[cursor]) {
-                    status = table[status];
+                    status = table[status - 1];
                 }
             }
             cursor++;
@@ -139,8 +146,22 @@ main(int argc, const char **argv)
 
     free(buf);
     free(table);
+
     close(fin);
     close(fout);
+
+
+    real_after = times(&tms_after);
+
+    clock_t rtime = real_after - real_before;
+    clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+    clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    fprintf(stderr, "real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    fprintf(stderr, "user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    fprintf(stderr, "sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
 
     return 0;
 }

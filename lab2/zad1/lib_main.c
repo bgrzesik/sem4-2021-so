@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/times.h>
+#include <unistd.h>
 
 #ifndef BUF_SIZE
 #define BUF_SIZE 512
@@ -81,8 +83,15 @@ _read_stdin(char *buf, size_t size)
 int
 main(int argc, const char **argv)
 {
+    struct tms tms_before, tms_after;
+    clock_t real_before, real_after;
+    real_before = times(&tms_before);
+
+
+
     char lname_buf[256], rname_buf[256];
     const char *lname, *rname;
+
 
     struct cursor stdin_cur = { sizeof(stdin_cur.buf), sizeof(stdin_cur.buf) };
 
@@ -132,6 +141,20 @@ main(int argc, const char **argv)
 
     fclose(lfile);
     fclose(rfile);
+
+
+    real_after = times(&tms_after);
+
+    clock_t rtime = real_after - real_before;
+    clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+    clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    fprintf(stderr, "real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    fprintf(stderr, "user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    fprintf(stderr, "sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
+
 
     return 0;
 }
