@@ -144,12 +144,12 @@ measure: executables
 	sync
 	sleep 2
 	echo "Lib" > pomiar_zad_4.txt
-	$(OBJ)/zad4_sys long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
+	$(OBJ)/zad4_lib long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
 	
 	sync
 	sleep 2
 	echo "Sys" >> pomiar_zad_4.txt
-	$(OBJ)/zad4_lib long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
+	$(OBJ)/zad4_sys long.txt tmp.txt C XXX 1>/dev/null 2>> pomiar_zad_4.txt
 	rm tmp.txt
 
 	# ====================================================================
@@ -157,12 +157,12 @@ measure: executables
 	sync
 	sleep 2
 	echo "Lib" > pomiar_zad_5.txt
-	$(OBJ)/zad5_sys long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
+	$(OBJ)/zad5_lib long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
 
 	sync
 	sleep 2
 	echo "Sys" >> pomiar_zad_5.txt
-	$(OBJ)/zad5_lib long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
+	$(OBJ)/zad5_sys long.txt tmp.txt 1>/dev/null 2>> pomiar_zad_5.txt
 	rm tmp.txt
 
 	# ====================================================================
