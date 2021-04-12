@@ -4,10 +4,12 @@ AUTHOR=GrzesikBartłomiej
 
 FILES=\
 	Makefile            	\
+	README.md            	\
 				\
 	zad1/main.c		\
 				\
 	zad2/main.c		\
+	zad2/bench.py		\
 				\
 	zad3/main.c		\
 				\

@@ -29,8 +29,12 @@ main(int argc, char **argv)
     lib_load_block_arr();
 #endif
 
-    struct block_arr arr;
+    struct tms tms_before, tms_after;
+    clock_t real_before, real_after;
 
+    real_before = times(&tms_before);
+
+    struct block_arr arr;
     block_arr_init(&arr, 4 * argc);
 
     for (int i = 1; i < argc; i++) {
@@ -72,6 +76,19 @@ main(int argc, char **argv)
     }
 
     block_arr_free(&arr);
+
+    real_after = times(&tms_after);
+
+    clock_t rtime = real_after - real_before;
+    clock_t utime = tms_after.tms_utime - tms_before.tms_utime;
+    clock_t stime = tms_after.tms_stime - tms_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    printf("real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    printf("user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    printf("sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
+
 
     return 0;
 }
