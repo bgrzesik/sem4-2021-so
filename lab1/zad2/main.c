@@ -111,7 +111,9 @@ cmd_merge_files(struct context *ctx)
 
     } while (right != NULL);
 
-    retreat(ctx);
+    if (left != NULL) {
+        retreat(ctx);
+    }
 
     int ret = block_arr_add_merged(&ctx->arr, &input);
 
@@ -230,6 +232,10 @@ main(int argc, const char **argv)
     lib_load();
     lib_load_block_arr();
 #endif
+    struct tms tms_total_before, tms_total_after;
+    clock_t total_real_before, total_real_after;
+
+    total_real_before = times(&tms_total_before);
 
     struct context ctx;
     ctx.arr_init = 0;
@@ -303,6 +309,18 @@ main(int argc, const char **argv)
     if (ctx.arr_init) {
         block_arr_free(&ctx.arr);
     }
+
+    total_real_after = times(&tms_total_after);
+
+    clock_t rtime = total_real_after - total_real_before;
+    clock_t utime = tms_total_after.tms_utime - tms_total_before.tms_utime;
+    clock_t stime = tms_total_after.tms_stime - tms_total_before.tms_stime;
+
+    float clk_tck = (float) sysconf(_SC_CLK_TCK);
+
+    printf("total real time: %4zu %7.3fs \n", rtime, rtime / clk_tck);
+    printf("total user time: %4zu %7.3fs \n", utime, utime / clk_tck);
+    printf("total sys  time: %4zu %7.3fs \n\n", stime, stime / clk_tck);
 
     return 0;
 }

@@ -50,7 +50,7 @@ define zad_targets
 
 $(foreach o, $(opts),
     zad$(1)_static_o$(o)  := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.static.o$(o)))
-    zad$(1)_shared_o$(o)  := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.static.o$(o)))
+    zad$(1)_shared_o$(o)  := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.shared.o$(o)))
     zad$(1)_dynamic_o$(o) := $$(addprefix ./obj/, $$(zad$(1)_src:%.c=%.dynamic.o$(o)))
 
     obj/zad$(1).static.o$(o): $$(zad$(1)_static_o$(o)) obj/liblib_static$(o).a
