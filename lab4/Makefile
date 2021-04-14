@@ -12,6 +12,10 @@ FILES=\
 	zad3a/common.h		\
 	zad3a/sender.c		\
 	zad3a/catcher.c		\
+				\
+	zad3b/common.h		\
+	zad3b/sender.c		\
+	zad3b/catcher.c		\
 
 
 
@@ -79,21 +83,29 @@ executables: $(1)
 
 endef
 
+
 # =============================================================================
 
 
-$(eval $(call solution,zad2_onstack, zad2/onstack.c))
+$(eval $(call solution,zad2_onstack,    zad2/onstack.c))
 $(eval $(call solution,zad2_no_onstack, zad2/onstack.c, -DNO_ONSTACK))
 
-$(eval $(call solution,zad2_nodefer, zad2/nodefer.c))
+$(eval $(call solution,zad2_nodefer,    zad2/nodefer.c))
 $(eval $(call solution,zad2_no_nodefer, zad2/nodefer.c, -DNO_NODEFER))
 
-$(eval $(call solution,zad2_restart, zad2/restart.c))
+$(eval $(call solution,zad2_restart,    zad2/restart.c))
 $(eval $(call solution,zad2_no_restart, zad2/restart.c, -DNO_RESTART))
 
 
-$(eval $(call solution,zad3a_sender, zad3a/sender.c))
+$(eval $(call solution,zad3a_sender,  zad3a/sender.c))
 $(eval $(call solution,zad3a_catcher, zad3a/catcher.c))
+
+zad3b_common := zad3b/common.c zad3b/receive.c zad3b/transmit.c
+$(eval $(call solution,zad3b_catcher, zad3b/catcher.c $(zad3b_common), -DCATCHER))
+$(eval $(call solution,zad3b_sender,  zad3b/sender.c $(zad3b_common),  -DSENDER))
+
+
+# =============================================================================
 
 
 run_zad3a: zad3a_sender zad3a_catcher
@@ -101,6 +113,10 @@ run_zad3a: zad3a_sender zad3a_catcher
 	$(OBJ)/zad3a_catcher &
 	$(OBJ)/zad3a_sender `pidof zad3a_catcher` $(ARGS)
 
+run_zad3b: zad3b_sender zad3b_catcher
+	@killall -SIGKILL zad3b_catcher 2>&1 1>/dev/null || true
+	$(OBJ)/zad3b_catcher &
+	$(OBJ)/zad3b_sender `pidof zad3b_catcher` $(ARGS)
 
 # =============================================================================
 
