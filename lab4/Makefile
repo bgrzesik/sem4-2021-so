@@ -52,7 +52,7 @@ $(addprefix $(OBJ)/$(1).out/, $(src:%.c=%.o)): $(src)
 $(1): $(OBJ)/$(1)
 $(OBJ)/$(1): $$($(1)_obj)
 	@printf "%10s %s\n" LD $(1)
-	@$$(LD) -o $$@ $$(LDFLAGS) $$^
+	@$$(LD) -o $$@ $$(LDFLAGS) $$($(1)_obj)
 
 
 run_$(1): $(OBJ)/$(1)
@@ -89,6 +89,9 @@ endef
 
 # =============================================================================
 
+$(OBJ)/zad1: $(OBJ)/zad1.exec
+$(eval $(call solution,zad1, zad1/main.c, -D EXEC_FNAME='"$(OBJ)/zad1.exec"'))
+$(eval $(call solution,zad1.exec, zad1/exec.c))
 
 $(eval $(call solution,zad2_onstack,    zad2/onstack.c))
 $(eval $(call solution,zad2_no_onstack, zad2/onstack.c, -DNO_ONSTACK))
