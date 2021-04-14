@@ -94,7 +94,7 @@ receive(void)
     sigaddset(&act.sa_mask, SIGUSR2);
     sigaddset(&act.sa_mask, SIGRTMIN+1);
 
-    if (sigaction(SIGUSR1, &act, NULL) != 0 || sigaction(SIGRTMIN+0, &act, NULL)) {
+    if (sigaction(SIGUSR1, &act, NULL) != 0 || sigaction(SIGRTMIN+0, &act, NULL) != 0) {
         perror("signaction");
         return -1;
     }
@@ -108,7 +108,7 @@ receive(void)
     sigaddset(&act.sa_mask, SIGRTMIN+0);
 
     recv_end = 0;
-    if (sigaction(SIGUSR2, &act, NULL) != 0 || sigaction(SIGRTMIN+1, &act, NULL)) {
+    if (sigaction(SIGUSR2, &act, NULL) != 0 || sigaction(SIGRTMIN+1, &act, NULL) != 0) {
         perror("signaction");
         return -1;
     }

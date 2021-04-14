@@ -5,19 +5,24 @@ AUTHOR=GrzesikBartłomiej
 FILES=\
 	Makefile            	\
 				\
+	zad1/main.c		\
+	zad1/exec.c		\
+	zad1/raport2.txt	\
+				\
+	zad2/opis.txt		\
 	zad2/onstack.c		\
 	zad2/nodefer.c		\
 	zad2/restart.c		\
 				\
+	zad3a/catcher.c		\
 	zad3a/common.h		\
 	zad3a/sender.c		\
-	zad3a/catcher.c		\
 				\
-	zad3b/common.h		\
-	zad3b/sender.c		\
 	zad3b/catcher.c		\
+	zad3b/common.h		\
 	zad3b/common.c		\
 	zad3b/receive.c		\
+	zad3b/sender.c		\
 	zad3b/transmit.c	\
 
 

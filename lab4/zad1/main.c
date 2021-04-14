@@ -77,15 +77,34 @@ main(int argc, const char *argv[])
     }
 
     raise(SIGUSR1);
-    
-    pid_t child_pid = 0;
 
+    pid_t child_pid = 0;
     if ((child_pid = fork()) == 0) {
         child = 1;
-        raise(SIGUSR1);
+
+        if (strcmp(argv[1], "pending") != 0) {
+            raise(SIGUSR1);
+        }
     }
 
-    if (strcmp(argv[1], "pending") == 0) {
+    if (strcmp(argv[1], "ignore") == 0 || strcmp(argv[1], "handler") == 0) {
+        struct sigaction act;
+        if (sigaction(SIGUSR1, NULL, &act) != 0) {
+            perror("sigaction");
+            return -1;
+        }
+
+        printf(child ? "[child] " : "[parent] ");
+
+        if (act.sa_handler == SIG_DFL) {
+            printf("handler = SIG_DFL\n");
+        } else if (act.sa_handler == SIG_IGN) {
+            printf("handler = SIG_IGN\n");
+        } else {
+            printf("handler = %p\n", act.sa_handler);
+        }
+        
+    } else if (strcmp(argv[1], "pending") == 0) {
         sigset_t set;
         sigemptyset(&set);
         
@@ -101,15 +120,33 @@ main(int argc, const char *argv[])
         } else {
             printf("SIGUSR1 isn't pending\n");
         }
+
+    } else if (strcmp(argv[1], "mask") == 0) {
+        sigset_t set;
+        sigemptyset(&set);
+
+        if (sigprocmask(SIG_UNBLOCK, NULL, &set) != 0) {
+            perror("sigprocmask");
+            return -1;
+        }
+
+        printf(child ? "[child] " : "[parent] ");
+
+        if (sigismember(&set, SIGUSR1)) {
+            printf("SIGUSR1 is blocked\n");
+        } else {
+            printf("SIGUSR1 isn't blocked\n");
+        }
     }
 
     if (child) {
+        raise(SIGUSR1);
+
         execl(EXEC_FNAME, EXEC_FNAME, argv[1], NULL);
         perror("execl");
-        return -1;
-    }
 
-    if (!child) {
+        return -1;
+    } else {
         int stat, ret = -1;
         do {
            ret = waitpid(child_pid, &stat, 0);
