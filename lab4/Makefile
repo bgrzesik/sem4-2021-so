@@ -16,6 +16,9 @@ FILES=\
 	zad3b/common.h		\
 	zad3b/sender.c		\
 	zad3b/catcher.c		\
+	zad3b/common.c		\
+	zad3b/receive.c		\
+	zad3b/transmit.c	\
 
 
 

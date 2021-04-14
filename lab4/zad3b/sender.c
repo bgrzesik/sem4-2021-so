@@ -1,6 +1,3 @@
-#include <unistd.h>
-#include <signal.h>
-#include <math.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
@@ -8,29 +5,6 @@
 
 #include "common.h"
 
-
-size_t counter = 0;
-size_t n = 0;
-
-
-void
-sigmsg_handler(int sig, siginfo_t *info, void *ucontext)
-{
-    counter++;
-}
-
-
-void
-sigend_handler(int sig, siginfo_t *info, void *ucontext)
-{
-    WRITE_STATIC(STDOUT_FILENO, "[sender] caught ");
-    write_dec(STDOUT_FILENO, counter);
-    WRITE_STATIC(STDOUT_FILENO, " but sent ");
-    write_dec(STDOUT_FILENO, n);
-    WRITE_STATIC(STDOUT_FILENO, "\n");
-
-    exit(0);
-}
 
 static void
 print_usage(void)
@@ -52,7 +26,7 @@ main(int argc, const char *argv[])
         return -1;
     }
 
-    n = (size_t) strtol(argv[2], NULL, 10);
+    size_t n = (size_t) strtol(argv[2], NULL, 10);
     if (n == 0) {
         print_usage();
         return -1;
