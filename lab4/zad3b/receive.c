@@ -114,6 +114,7 @@ receive(void)
     }
 
     sigset_t set;
+    sigfillset(&set);
     sigdelset(&set, SIGUSR1);
     sigdelset(&set, SIGRTMIN+0);
 
