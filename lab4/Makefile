@@ -82,9 +82,14 @@ $(eval $(call solution,zad2_no_nodefer, zad2/nodefer.c, -DNO_NODEFER))
 $(eval $(call solution,zad2_restart, zad2/restart.c))
 $(eval $(call solution,zad2_no_restart, zad2/restart.c, -DNO_RESTART))
 
+$(eval $(call solution,zad3a_sender, zad3a/sender.c))
+$(eval $(call solution,zad3a_catcher, zad3a/catcher.c))
 
-measure: executables
-	echo TODO
+run_zad3a: zad3a_sender zad3a_catcher
+	@killall -SIGKILL zad3a_catcher 2>&1 1>/dev/null || true
+	$(OBJ)/zad3a_catcher &
+	$(OBJ)/zad3a_sender `pidof zad3a_catcher` $(ARGS)
+
 
 #obj/%.o : %.c
 #	@mkdir -p $(dir $@)
