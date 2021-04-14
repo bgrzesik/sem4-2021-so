@@ -14,23 +14,23 @@
 
 
 static inline void
-write_hex(int fd, void *p)
+write_dec(int fd, size_t pp)
 {
-    char buf[sizeof(p) * 2 + 1];
-    static const char map[] = "0123456789abcdef";
+    char buf[sizeof(pp) * 2 + 1];
+    static const char map[] = "0123456789";
 
-    intptr_t pp = (intptr_t) p;
     char *cur = &buf[sizeof(buf) - 1];
     *cur = 0;
 
-    for (size_t i = 0; i < sizeof(pp) * 2; i++) {
-        cur--;
-        *cur = map[pp & 0x0f];
-        pp >>= 4;
+    size_t iter = ((size_t) log10(pp)) + 1;
+    if (pp == 0) {
+        iter = 1;
+    }
 
-        if (pp == 0) {
-            break;
-        }
+    for (size_t i = 0; i < iter; i++) {
+        cur--;
+        *cur = map[pp % 10];
+        pp /= 10;
     }
 
     write(fd, cur, (buf + sizeof(buf)) - cur);
@@ -40,15 +40,17 @@ write_hex(int fd, void *p)
 void
 sigusr1_handler(int sig, siginfo_t *info, void *ucontext)
 {
-    (void) ucontext;
     int arg = info->si_value.sival_int;
 
-    WRITE_STATIC(STDOUT_FILENO, "sigusr1: ");
-    write_hex(STDOUT_FILENO, (void *) (intptr_t) arg);
+    WRITE_STATIC(STDOUT_FILENO, "SIGUSR1: ");
+    write_dec(STDOUT_FILENO, arg);
     WRITE_STATIC(STDOUT_FILENO, "\n");
 
     if (arg == 0) {
-        sigqueue(getpid(), SIGUSR1, (union sigval) { 1 });
+        if (sigqueue(getpid(), SIGUSR1, (union sigval) { 1 }) != 0) {
+            perror("sigqueue");
+            exit(-1);
+        }
 
         int time = 2;
         do {
@@ -59,7 +61,7 @@ sigusr1_handler(int sig, siginfo_t *info, void *ucontext)
         WRITE_STATIC(STDERR_FILENO, "error: unknown argument\n");
     }
     
-    WRITE_STATIC(STDOUT_FILENO, "sigusr1: done\n");
+    WRITE_STATIC(STDOUT_FILENO, "SIGUSR1: done\n");
 }
 
 
@@ -81,7 +83,10 @@ main(int argc, const char *argv[])
         return -1;
     }
 
-    sigqueue(getpid(), SIGUSR1, (union sigval) { 0 });
+    if (sigqueue(getpid(), SIGUSR1, (union sigval) { 0 }) != 0) {
+        perror("sigqueue");
+        return -1;
+    }
 
     return 0;
 }

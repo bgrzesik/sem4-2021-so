@@ -40,8 +40,6 @@ write_hex(int fd, void *p)
 void
 sigsegv_handler(int sig, siginfo_t *info, void *ucontext)
 {
-    (void) ucontext;
-
     WRITE_STATIC(STDOUT_FILENO, "Segmentation fault\nAddress: 0x");
     write_hex(STDOUT_FILENO, info->si_addr);
     WRITE_STATIC(STDOUT_FILENO, "\n");
