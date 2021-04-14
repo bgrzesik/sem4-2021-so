@@ -4,7 +4,14 @@ AUTHOR=GrzesikBartłomiej
 
 FILES=\
 	Makefile            	\
-
+				\
+	zad2/onstack.c		\
+	zad2/nodefer.c		\
+	zad2/restart.c		\
+				\
+	zad3a/common.h		\
+	zad3a/sender.c		\
+	zad3a/catcher.c		\
 
 
 
@@ -20,7 +27,7 @@ CC := gcc
 AR := ar
 LD := $(CC)
 GDB := gdb
-CFLAGS := -Wall -c -g -I./lib -DLIB_STATIC
+CFLAGS := -Wall -c -g
 OBJ := ./obj
 LDFLAGS := -L $(OBJ)/ -lm
 
@@ -72,29 +79,28 @@ executables: $(1)
 
 endef
 
+# =============================================================================
 
-#$(eval $(call solution,z1, zad1/main.c))
 
 $(eval $(call solution,zad2_onstack, zad2/onstack.c))
 $(eval $(call solution,zad2_no_onstack, zad2/onstack.c, -DNO_ONSTACK))
+
 $(eval $(call solution,zad2_nodefer, zad2/nodefer.c))
 $(eval $(call solution,zad2_no_nodefer, zad2/nodefer.c, -DNO_NODEFER))
+
 $(eval $(call solution,zad2_restart, zad2/restart.c))
 $(eval $(call solution,zad2_no_restart, zad2/restart.c, -DNO_RESTART))
 
+
 $(eval $(call solution,zad3a_sender, zad3a/sender.c))
 $(eval $(call solution,zad3a_catcher, zad3a/catcher.c))
+
 
 run_zad3a: zad3a_sender zad3a_catcher
 	@killall -SIGKILL zad3a_catcher 2>&1 1>/dev/null || true
 	$(OBJ)/zad3a_catcher &
 	$(OBJ)/zad3a_sender `pidof zad3a_catcher` $(ARGS)
 
-
-#obj/%.o : %.c
-#	@mkdir -p $(dir $@)
-#	@printf "%10s %s\n" CC $<
-#	@$(CC) $(CFLAGS) $< -o $@
 
 # =============================================================================
 
@@ -116,7 +122,7 @@ $(ARCHIVE_TOP)/%: %
 	@printf "%10s %s\n" INSTALL $(@:$(ARCHIVE_TOP)/%=%)
 	@install -C -D $(@:$(ARCHIVE_TOP)/%=%) ./$@
 
-$(ARCHIVE): measure $(ARCHIVE_CONTENTS)
+$(ARCHIVE): $(ARCHIVE_CONTENTS)
 	@printf "%10s %s\n" TAR $(ARCHIVE)
 	@tar -czf $(ARCHIVE) $(AUTHOR)
 

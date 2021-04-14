@@ -66,8 +66,6 @@ main(int argc, const char *argv[])
         return -1;
     }
 
-    pid_t ppid = getpid();
-
     while (1) {
         char c[2];
         int num = read(STDIN_FILENO, &c, sizeof(c));

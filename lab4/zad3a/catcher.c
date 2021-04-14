@@ -5,38 +5,12 @@
 #include <errno.h>
 #include <stdio.h>
 
+#define TAG "[catcher]"
+#include "common.h"
 
-#define WRITE_STATIC(fd, text)                  \
-    do {                                        \
-        static const char msg[] = (text);       \
-        write((fd), msg, sizeof(msg));          \
-    } while (0)
-
-
-static inline void
-write_dec(int fd, size_t pp)
-{
-    char buf[sizeof(pp) * 2 + 1];
-    static const char map[] = "0123456789";
-
-    char *cur = &buf[sizeof(buf) - 1];
-    *cur = 0;
-
-    size_t iter = ((size_t) log10(pp)) + 1;
-    if (pp == 0) {
-        iter = 1;
-    }
-
-    for (size_t i = 0; i < iter; i++) {
-        cur--;
-        *cur = map[pp % 10];
-        pp /= 10;
-    }
-
-    write(fd, cur, (buf + sizeof(buf)) - cur);
-}
 
 size_t counter = 0;
+
 
 void
 sigmsg_handler(int sig, siginfo_t *info, void *ucontext)
@@ -51,12 +25,17 @@ sigend_handler(int sig, siginfo_t *info, void *ucontext)
     write_dec(STDOUT_FILENO, counter);
     WRITE_STATIC(STDOUT_FILENO, "\n");
 
+    int (*method)(int, pid_t, int) = &method_kill;
     pid_t sender = info->si_pid;
 
-    /* "When delivering a signal with a SA_SIGINFO handler, the kernel
-        does not always provide meaningful values for all of the fields
-        of the siginfo_t that are relevant for that signal." 
-        sigaction(2) */
+    if (info->si_code == SI_QUEUE) {
+        method = &method_sigqueue;
+
+        WRITE_STATIC(STDOUT_FILENO, "[catcher] supposed to receive ");
+        write_dec(STDOUT_FILENO, info->si_value.sival_int);
+        WRITE_STATIC(STDOUT_FILENO, "\n");
+    }
+
     if (sender != 0) { 
         int msg_signal = SIGUSR1;
         int end_signal = SIGUSR2;
@@ -70,10 +49,7 @@ sigend_handler(int sig, siginfo_t *info, void *ucontext)
         write_dec(STDOUT_FILENO, sender);
         WRITE_STATIC(STDOUT_FILENO, "\n");
 
-        for (int i = 0; i < counter; i++) {
-            sigqueue(sender, msg_signal, (union sigval) i);
-        }
-        sigqueue(sender, end_signal, (union sigval) 0);
+        transmit(method, msg_signal, end_signal, sender, counter);
     }
     
     exit(0);
@@ -83,6 +59,8 @@ int
 main(int argc, const char *argv[])
 {
     struct sigaction act;
+
+    /* msg handler */
     act.sa_sigaction = &sigmsg_handler;
     act.sa_flags = SA_SIGINFO;
 
@@ -95,6 +73,7 @@ main(int argc, const char *argv[])
         return -1;
     }
 
+    /* end handler */
     act.sa_sigaction = &sigend_handler;
     act.sa_flags = SA_SIGINFO;
 
@@ -112,6 +91,7 @@ main(int argc, const char *argv[])
     sigset_t set;
     sigfillset(&set);
     sigdelset(&set, SIGINT);
+
     sigprocmask(SIG_SETMASK, &set, NULL);
     
     sigdelset(&set, SIGUSR1);
