@@ -96,6 +96,8 @@ endef
 
 $(eval $(call solution,zad1, zad1/main.c zad1/interpreter.c zad1/list.c zad1/exec_chain.c))
 
+$(eval $(call solution,zad2, zad2/main.c))
+
 # =============================================================================
 
 
