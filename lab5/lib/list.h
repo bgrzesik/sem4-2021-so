@@ -90,6 +90,4 @@ list_end(struct list *list)
     return &list->data[list->size * list->stride];
 }
 
-
-
 #endif

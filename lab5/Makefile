@@ -1,29 +1,27 @@
 
-LAB_NO=04
+LAB_NO=05
 AUTHOR=GrzesikBartłomiej
 
 FILES=\
 	Makefile            	\
 				\
+	lib/list.h		\
+	lib/list.c		\
+				\
 	zad1/main.c		\
-	zad1/exec.c		\
-	zad1/raport2.txt	\
+	zad1/exec_chain.c	\
+	zad1/exec_chain.h	\
+	zad1/interpreter.c	\
+	zad1/interpreter.h	\
 				\
-	zad2/opis.txt		\
-	zad2/onstack.c		\
-	zad2/nodefer.c		\
-	zad2/restart.c		\
+	zad2/main.c		\
 				\
-	zad3a/catcher.c		\
-	zad3a/common.h		\
-	zad3a/sender.c		\
-				\
-	zad3b/catcher.c		\
-	zad3b/common.h		\
-	zad3b/common.c		\
-	zad3b/receive.c		\
-	zad3b/sender.c		\
-	zad3b/transmit.c	\
+	zad3/consumer.c		\
+	zad3/producer.c		\
+	zad3/common.h		\
+	zad3/common.c		\
+	zad3/test.py		\
+	zad3/wnioski.txt	\
 
 
 
@@ -39,7 +37,7 @@ CC := gcc
 AR := ar
 LD := $(CC)
 GDB := gdb
-CFLAGS := -Wall -c -g
+CFLAGS := -Wall -c -g -I ./lib
 OBJ := ./obj
 LDFLAGS := -L $(OBJ)/ -lm
 
@@ -94,17 +92,35 @@ endef
 
 # =============================================================================
 
-$(eval $(call solution,zad1, zad1/main.c zad1/interpreter.c zad1/list.c zad1/exec_chain.c))
+$(eval $(call solution,zad1, zad1/main.c zad1/interpreter.c zad1/exec_chain.c lib/list.c ))
 
 $(eval $(call solution,zad2, zad2/main.c))
 
+$(eval $(call solution,zad3_consumer, zad3/consumer.c zad3/common.c lib/list.c))
+$(eval $(call solution,zad3_producer, zad3/producer.c zad3/common.c lib/list.c))
+
 # =============================================================================
+
+test:
+	@echo Testing with n=10 1 consumer 3 producers
+	@python3 ./zad3/test.py 10 1 3
+	@echo Testing with n=10 10 consumer 1 producers
+	@python3 ./zad3/test.py 10 10 1
+	@echo Testing with n=10 10 consumer 10 producers
+	@python3 ./zad3/test.py 10 10 10
+	#
+	@echo Testing with n=5000 1 consumer 3 producers
+	@python3 ./zad3/test.py 5000 1 3
+	@echo Testing with n=5000 10 consumer 1 producers
+	@python3 ./zad3/test.py 5000 10 1
+	@echo Testing with n=5000 10 consumer 10 producers
+	@python3 ./zad3/test.py 5000 10 10
 
 
 # =============================================================================
 
 .PHONY: clean
-clean:
+clean: zad3_producer zad3_consumer
 	@printf "%10s %s\n" RM $(ARCHIVE)
 	@rm -f $(ARCHIVE)
 
