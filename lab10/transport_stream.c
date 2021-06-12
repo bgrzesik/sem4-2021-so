@@ -22,7 +22,7 @@ struct packet {
 #define EPOLL_DATA_STDIN 0
 #define EPOLL_DATA_SERVER 1
 
-#define EPOLL_MAX_EVENTS 32
+#define EPOLL_MAX_EVENTS SERVER_MAX_CLIENTS
 
 static int
 packet_read_magic(int socket, int expected)
@@ -122,7 +122,7 @@ server_init(struct server *server, int inet_port, const char *unix_path)
     /* game logic */
     for (size_t i = 0; i < SERVER_MAX_CLIENTS; ++i) {
         server->clients[i].id = i;
-        server->clients[i].type = CONNECTED_CLIENT_TYPE_NONE;
+        server->clients[i].type = CLIENT_TYPE_NONE;
     }
 
     return 0;
@@ -130,12 +130,12 @@ server_init(struct server *server, int inet_port, const char *unix_path)
 
 static int
 server_handle_new_connection(struct server *server,
-                             enum connected_client_type type,
+                             enum client_type type,
                              server_event_handler_t event_handler)
 {
 
     int server_socket;
-    if (type == CONNECTED_CLIENT_TYPE_INET) {
+    if (type == CLIENT_TYPE_INET) {
         server_socket = server->inet_socket;
     } else {
         server_socket = server->unix_socket;
@@ -146,7 +146,7 @@ server_handle_new_connection(struct server *server,
 
     int16_t client_id;
     for (client_id = 0; client_id < SERVER_MAX_CLIENTS; ++client_id) {
-        if (server->clients[client_id].type == CONNECTED_CLIENT_TYPE_NONE) {
+        if (server->clients[client_id].type == CLIENT_TYPE_NONE) {
             break;
         }
     }
@@ -165,7 +165,7 @@ server_handle_new_connection(struct server *server,
     }
 
     printf("[%hd] new connection (%s)\n",
-           client_id, type == CONNECTED_CLIENT_TYPE_INET ? "inet" : "unix");
+           client_id, type == CLIENT_TYPE_INET ? "inet" : "unix");
 
     struct connected_client *client = &server->clients[client_id];
     client->id = client_id;
@@ -214,7 +214,7 @@ server_handle_disconnect(struct server *server,
 {
     struct connected_client *client = &server->clients[client_id];
 
-    err_chk(client->type != CONNECTED_CLIENT_TYPE_NONE);
+    err_chk(client->type != CLIENT_TYPE_NONE);
     client->alive = 0;
 
     struct server_event server_event;
@@ -236,7 +236,6 @@ server_poll_events(struct server *server,
     int ret;
     struct epoll_event epoll_events[EPOLL_MAX_EVENTS];
 
-    /* TODO timeout clients */
     npos_chk(ret = epoll_wait(server->epoll, epoll_events, EPOLL_MAX_EVENTS, -1));
     if (ret > EPOLL_MAX_EVENTS) {
         fprintf(stderr, "error: invalid number of events returned from epoll_wait\n");
@@ -247,12 +246,12 @@ server_poll_events(struct server *server,
         struct epoll_event *event = &epoll_events[i];
         if ((event->events & EPOLLIN) == EPOLLIN && event->data.u32 == EPOLL_DATA_INET) {
             non0_chk(server_handle_new_connection(server,
-                                                  CONNECTED_CLIENT_TYPE_INET,
+                                                  CLIENT_TYPE_INET,
                                                   event_handler));
 
         } else if ((event->events & EPOLLIN) == EPOLLIN && event->data.u32 == EPOLL_DATA_UNIX) {
             non0_chk(server_handle_new_connection(server,
-                                                  CONNECTED_CLIENT_TYPE_UNIX,
+                                                  CLIENT_TYPE_UNIX,
                                                   event_handler));
 
         } else {
@@ -320,7 +319,7 @@ connected_client_send(struct server *server,
                       struct message *message)
 {
     struct connected_client *client = &server->clients[client_id];
-    err_chk(client->type != CONNECTED_CLIENT_TYPE_NONE);
+    err_chk(client->type != CLIENT_TYPE_NONE);
 
     message->recipient = (int16_t) client_id;
     message->sender = MESSAGE_IDENTITY_SERVER;
@@ -348,7 +347,7 @@ connected_client_drop(struct server *server,
     shutdown(client->socket, SHUT_RDWR);
     close(client->socket);
 
-    client->type = CONNECTED_CLIENT_TYPE_NONE;
+    client->type = CLIENT_TYPE_NONE;
 
     printf("[%hd] client disconnected\n", client_id);
 
@@ -380,6 +379,7 @@ client_connect_inet(struct client *client, const char *hostname, int port)
 {
     client->alive = 0;
     client->client_id = MESSAGE_IDENTITY_UNKNOWN;
+    client->type = CLIENT_TYPE_INET;
     npos_chk(client->server = socket(AF_INET, SOCK_STREAM, 0));
 
     struct sockaddr_in addr;
@@ -397,10 +397,13 @@ client_connect_inet(struct client *client, const char *hostname, int port)
 }
 
 int
-client_connect_unix(struct client *client, const char *path)
+client_connect_unix(struct client *client, 
+                    const char *path, 
+                    const char *client_path)
 {
     client->alive = 0;
     client->client_id = MESSAGE_IDENTITY_UNKNOWN;
+    client->type = CLIENT_TYPE_UNIX;
     npos_chk(client->server = socket(AF_UNIX, SOCK_STREAM, 0));
 
     struct sockaddr_un addr;
@@ -423,7 +426,6 @@ client_handle_events(struct client *client,
     struct epoll_event epoll_events[2];
     int ret;
 
-    /* TODO implement heartbeat */
     npos_chk(ret = epoll_wait(client->epoll, epoll_events, 2, -1));
 
     for (size_t i = 0; i < ret; ++i) {

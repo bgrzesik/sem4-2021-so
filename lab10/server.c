@@ -1,4 +1,5 @@
 #include "transport.h"
+#include <signal.h>
 #include <string.h>
 
 enum player_state {
@@ -213,7 +214,8 @@ handle_client_drop(struct server *server, struct server_event *event)
     struct player *sender = &games.players[client_id];
 
     if (sender->state != PLAYER_STATE_PLAYING) {
-        return;
+        sender->state = PLAYER_STATE_NONE;
+        return 0;
     }
 
     struct game_plane *plane = sender->plane;
@@ -273,9 +275,30 @@ server_handler(struct server *server, struct server_event *event)
     return 0;
 }
 
+struct server server;
+
+static void
+sigint_handler(int signal)
+{
+    server_destroy(&server);
+    exit(0);
+}
+
 int
 main(int argc, const char *argv[])
 {
+    if (argc != 3) {
+        fprintf(stderr, "usage: ./a.out <port> <unix>\n");
+        return -1;
+    }
+
+    int port = atoi(argv[1]);
+    const char *path = argv[2];
+    if (port == 0 || argv[2][0] == '\0') {
+        fprintf(stderr, "usage: ./a.out <port> <unix>\n");
+        return -1;
+    }
+
     for (size_t i = 0; i < SERVER_MAX_CLIENTS; i++) {
         games.players[i].state = PLAYER_STATE_NONE;
         games.players[i].name[0] = '\0';
@@ -285,17 +308,14 @@ main(int argc, const char *argv[])
         games.planes[i].taken = 0;
     }
 
-    struct server server;
+    non0_chk(server_init(&server, port, path));
 
-    /* TODO change */
-    non0_chk(server_init(&server, TICK_TACK_TOE_PORT, "./server"));
+    non0_chk(signal(SIGINT, &sigint_handler));
+
     while (1) {
         non0_chk(server_poll_events(&server, &server_handler));
     }
     non0_chk(server_destroy(&server));
-
-
-
 
     return 0;
 }

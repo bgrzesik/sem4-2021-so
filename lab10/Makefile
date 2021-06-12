@@ -5,7 +5,11 @@ AUTHOR=GrzesikBartłomiej
 FILES=\
 	Makefile            	\
 				\
-	main.c			\
+	transport.h		\
+	transport_dgram.c	\
+	transport_stream.c	\
+	client.c		\
+	server.c		\
 
 
 

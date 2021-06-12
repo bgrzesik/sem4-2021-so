@@ -1,6 +1,7 @@
 #include "transport.h"
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 
 enum client_game_state {
     CLIENT_GAME_STATE_WAITING,
@@ -21,24 +22,25 @@ static void
 print_game_field(void)
 {
     printf("\n");
-    printf("\t\t0 1 2\n");
+    printf("\t\t+0 +1 +2\n");
     for (size_t r = 0; r < 3 ; r++) {
-        const char *letter[] = {"A", "B", "C"};
+        const char *letter[] = {"1", "4", "7"};
         printf("\t%s\t", letter[r]);
 
         for (size_t c = 0; c < 3 ; c++) {
             enum tick_tac tick_tac = client_game.fields[r * 3 + c];
             if (tick_tac == TICK_TAC_EMPTY) {
-                printf("_ ");
+                printf(" _ ");
             } else if (tick_tac == TICK_TAC_X) {
-                printf("X ");
+                printf(" X ");
             } else if (tick_tac == TICK_TAC_O) {
-                printf("O ");
+                printf(" O ");
             }
         }
 
         printf("\n");
     }
+    printf("\n");
 }
 
 static void 
@@ -121,19 +123,19 @@ handle_player_input(struct client *client, struct client_event *event)
     char *input = event->input.text;
 
     while (*input != '\0' && input < event->input.text + MESSAGE_PLAYER_NAME_LEN) {
-        if (*input == 'A' || *input == 'B' || *input =='C') {
+        if ('1' <= *input && *input <= '9') {
             break;
         }
         input++;
     }
 
-    if (*input == '\0' || (input[1] != '0' && input[1] != '1' && input[1] != '2')) {
+    if (*input == '\0' || !('1' <= *input && *input <= '9')) {
         print_game_field();  
         print_instructions();
         return 0;
     }
 
-    int field = (*input - 'A') * 3 + (input[1] - '0');
+    int field = *input - '1';
 
     if (client_game.fields[field] != TICK_TAC_EMPTY) {
         print_game_field();  
@@ -180,32 +182,23 @@ handle_player_move(struct client *client, struct client_event *event)
 int
 client_handler(struct client *client, struct client_event *event)
 {
-
-    printf("event.type = %d\n", event->type);
     switch (event->type) {
 
         case CLIENT_EVENT_TYPE_SERVER_MESSAGE:
-            printf("MESSAGE\n");
-
-
             switch (event->message.type) {
                 case MESSAGE_TYPE_HANDSHAKE:
-                    printf("\tHANDSHAKE\n");
                     client->client_id = event->message.handshake.client_id;
                     break;
 
                 case MESSAGE_TYPE_GAME_START:
-                    printf("\tGAME_START\n");
                     non0_chk(handle_game_start(client, event));
                     break;
 
                 case MESSAGE_TYPE_PLAYER_MOVE:
-                    printf("\tPLAYER_MOVE\n");
                     non0_chk(handle_player_move(client, event));
                     break;
 
                 case MESSAGE_TYPE_DROP:
-                    printf("\tDROP\n");
                     client->alive = 0;
 
                     switch (event->message.drop.cause) {
@@ -243,18 +236,17 @@ client_handler(struct client *client, struct client_event *event)
             break;
 
         case CLIENT_EVENT_TYPE_SERVER_DROP:
-            printf("DROP\n");
             client->alive = 0;
 
             break;
 
         case CLIENT_EVENT_TYPE_STDIN_INPUT:
-            printf("STDIN\n");
-
-            if (client_game.state != CLIENT_GAME_STATE_PLAYER_TURN) {
+            if (client_game.state == CLIENT_GAME_STATE_PLAYER_TURN) {
+                non0_chk(handle_player_input(client, event));
+            } else if (client_game.state == CLIENT_GAME_STATE_WAITING) {
                 printf("Please wait for your turn.\n");
             } else {
-                non0_chk(handle_player_input(client, event));
+                printf("Please wait fot the second player to tune in.\n");
             }
 
             break;
@@ -263,32 +255,63 @@ client_handler(struct client *client, struct client_event *event)
     return 0;
 }
 
+struct client client;
+
+static void
+sigint_handler(int signal)
+{
+    client_destroy(&client);
+    exit(0);
+}
+
 int
 main(int argc, const char *argv[])
 {
     /* TODO remove */
     sleep(1);
 
-    struct client client;
 
     client_game.state = CLIENT_GAME_STATE_WAITING;
 
-    // non0_chk(client_connect_inet(&client, "127.0.0.1", TICK_TACK_TOE_PORT));
-    non0_chk(client_connect_unix(&client, "./server"));
+    if (argc != 4) {
+        fprintf(stderr, "usage: ./a.out <name> unix|inet <ip>:<port>|<path>\n");
+        return -1;
+    }
 
-    char *name = client_game.player_name;
-    size_t bytes = sizeof(client_game.player_name);
+    const char *name = argv[1];
+    const char *method = argv[2];
+    const char *addr = argv[3];
 
-    printf("Enter player name: ");
-    npos_chk(bytes = getline(&name, &bytes, stdin));
-    name[bytes - 1] = '\0';
+    if (strcmp(method, "inet") == 0) {
+        char *double_dot = strchr(addr, ':');
+        if (double_dot == NULL) {
+            fprintf(stderr, "usage: ./a.out <name> unix|inet <ip>:<port>|<path>\n");
+            return -1;
+        }
+
+        *double_dot = '\0';
+        int port = atoi(double_dot + 1);
+        if (port == 0) {
+            fprintf(stderr, "usage: ./a.out <name> unix|inet <ip>:<port>|<path>\n");
+            return -1;
+        }
+
+        non0_chk(client_connect_inet(&client, addr, port));
+    } else if (strcmp(method, "unix") == 0) {
+        non0_chk(client_connect_unix(&client, addr, name));
+    } else {
+        fprintf(stderr, "usage: ./a.out <name> unix|inet <ip>:<port>|<path>\n");
+        return -1;
+    }
+
+    non0_chk(signal(SIGINT, &sigint_handler));
+
+    strncpy(client_game.player_name, name, MESSAGE_PLAYER_NAME_LEN);
 
     struct message message;
     message.type = MESSAGE_TYPE_HANDSHAKE;
 
-    strncpy(message.handshake.name, 
-            client_game.player_name,
-            MESSAGE_PLAYER_NAME_LEN);
+    strncpy(message.handshake.name, client_game.player_name, MESSAGE_PLAYER_NAME_LEN);
 
     non0_chk(client_send(&client, &message));
 

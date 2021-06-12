@@ -31,6 +31,7 @@ enum message_type {
     MESSAGE_TYPE_GAME_START,
     MESSAGE_TYPE_PLAYER_MOVE,
     MESSAGE_TYPE_DROP,
+    MESSAGE_TYPE_HEARTBEAT,
 };
 
 enum tick_tac {
@@ -79,6 +80,10 @@ struct message {
     };
 } __attribute__((packed));
 
+
+__attribute__((unused))
+static int _static_assert_packet_size[(sizeof(struct message) < 512) ? 0 : -1];
+
 #define err_chk(op)          \
     do {                     \
         if (!(op)) {         \
@@ -93,18 +98,18 @@ struct message {
 #define SERVER_MAX_CLIENTS 32
 #define SERVER_TIMEOUT_TIME 1000
 
-enum connected_client_type {
-    CONNECTED_CLIENT_TYPE_NONE, /* not connected */
-    CONNECTED_CLIENT_TYPE_UNIX, /* unix domain socket */
-    CONNECTED_CLIENT_TYPE_INET, /* tcp/udp */
+enum client_type {
+    CLIENT_TYPE_NONE, /* not connected */
+    CLIENT_TYPE_UNIX, /* unix domain socket */
+    CLIENT_TYPE_INET, /* tcp/udp */
 };
 
 struct connected_client {
     int16_t id;
-    int type;
+    enum client_type type;
     int alive;
 
-    long last_message;
+    uint64_t last_message;
 
     union {
         int socket;
@@ -165,9 +170,12 @@ connected_client_drop(struct server *server,
 struct client {
     int server;
     int epoll;
+    enum client_type type;
 
     int16_t client_id;
     int alive;
+
+    long last_message;
 };
 
 enum client_event_type {
@@ -195,7 +203,9 @@ int
 client_connect_inet(struct client *client, const char *hostname, int port);
 
 int
-client_connect_unix(struct client *client, const char *path);
+client_connect_unix(struct client *client, 
+                    const char *path, 
+                    const char *client_path);
 
 int
 client_send(struct client *client, struct message *message);
